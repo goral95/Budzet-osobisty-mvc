@@ -1,0 +1,87 @@
+<!DOCTYPE HTML>
+<html lang="pl">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	
+	<title>{% block title %}{% endblock %}</title>
+	
+	<meta name="description" content="Aplikacja, która pozwoli zapanować nad Twoimi finansami. Nie czekaj, ten jeden krok może być furtką do lepszej przyszłości." />
+	<meta name="keywords" content="aplikacja, budżet, osobisty, wydatki, przychody, bilans, rachunek, pieniądze, html, css, javascript, bank" />
+	<meta name="author" content="ŁG">
+	
+	<link rel="stylesheet" href="/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/css/style.css">
+	<link rel="stylesheet" href="/css/fontello.css">
+	<link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet"> 
+	
+	
+	
+	<!--[if lt IE 9]>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+	<![endif]-->
+	
+</head>
+
+<body>
+	
+	<header>
+	
+		<div class = "d-flex flex-column flex-sm-column flex-md-row justify-content-center align-items-center align-items-sm-center align-items-md-stretch mt-3">
+		
+				<a href = "/"><div class = "logo mr-3"><i class="icon-chart-line"></i></div></a>
+				
+				<div class = "titleBlock mt-2 mt-sm-2 mt-md-0">
+				
+					<h1>Budżet Osobisty</h1>
+					<p>Nie czekaj, ten jeden krok może być furtką <br /> do lepszej przyszłości</p>
+					
+				</div>
+		
+		</div>
+	
+	</header>
+	
+	<main>
+	
+		<article>
+		
+			<h2 class = "d-none">{% block article_title %}{% endblock %}</h2>
+		
+			<div class = "container-fluid">
+			
+				<div class = "row g-0">
+				
+					<div class = "col-md-10  offset-md-1 myContainer mt-3 text-center">
+					
+						{% block body %}
+						{% endblock %}
+						
+					</div>
+				
+				</div>
+			
+			</div>
+		
+		</article>
+
+	</main>
+	
+	<footer class = "my-5">
+	
+		2021 &copy; Budżet osobisty created by Łukasz Górczyk 
+	
+	</footer>
+	
+	<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+	
+	<script src="/js/bootstrap.min.js"></script>
+	
+	{% block js %}
+    {% endblock %}
+	
+</body>
+</html>

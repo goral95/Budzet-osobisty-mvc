@@ -1,0 +1,111 @@
+{% extends "base_before_login.html" %}
+
+{% block title %}Rejestracja{% endblock %}
+
+{% block article_title %}Registration page{% endblock %}
+
+{% block section_title %}REJESTRACJA{% endblock %}
+
+{% block js %}
+	<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/jquery.validate.min.js"></script>
+	<script src = "/js/messages_pl.js"</script>
+    <script src="/js/hideShowPassword.min.js"></script>
+	<script src="/js/app.js"></script>
+    <script>
+   
+        $(document).ready(function() {
+			
+			 
+            /**
+             * Validate the form
+             */
+            $('#formSignup').validate({
+                rules: {
+                    name: 'required',
+                    email: {
+                        required: true,
+                        email: true,
+                        remote: '/account/validate-email'
+                    },
+                    password: {
+                        required: true,
+                        minlength: 6,
+						maxlength: 20,
+                        validPassword: true
+                    }
+                },
+                messages: {
+                    email: {
+                        remote: 'Email jest już zajęty'
+                    }
+                }
+            });
+
+
+            /**
+              * Show password toggle button
+              */
+            $('#inputPassword').hideShowPassword({
+                show: false,
+                innerToggle: 'focus'
+            });
+        });
+    </script>
+
+{% endblock %}
+
+{% block body %}
+
+	    {% if user.errors is not empty %}
+		<span class = "my-alert-warning">
+        <p class = "my-alert-warning">Errors:</p>
+        <ul>
+            {% for error in user.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+		</span>
+		{% endif %}
+
+<form method = "post" action = "/signup/create" id = "formSignup" >
+										
+<div class="form-group">
+	<label for="name" class = "d-block">Imię</label>
+	
+	<div class = "d-inline-block"><div class = "inputIcon align-top d-flex align-items-center justify-content-center"><i class="icon-user"></i></div></div><input type="text" class="form-control d-inline-block align-top" name ="name" placeholder="Imię" required value="{{ user.name }}">
+	
+</div>
+
+
+<div class="form-group">
+	<label for="email" class = "d-block">E-mail</label>
+
+	<div class = "d-inline-block"><div class = "inputIcon align-top d-flex align-items-center justify-content-center"><i class="icon-mail-alt"></i></div></div><input type="email" class="form-control d-inline-block align-top" name ="email" placeholder="E-mail"  
+	value="{{ user.email }}" required>
+
+</div>
+
+<div class="form-group">
+	<label for="inputPassword" class = "d-block">Hasło</label>
+
+	<div class = "d-inline-block"><div class = "inputIcon align-top d-flex align-items-center justify-content-center"><i class="icon-key"></i></div></div><input type="password" class="form-control d-inline-block align-top" name ="password" id = "inputPassword" placeholder="Hasło" required>
+
+</div>
+
+{% for message in flash_messages %}
+	<div class=" my-alert-{{ message.type }} mb-3">
+		{{ message.body }}
+	</div>
+{% endfor %}
+
+<div class = "form-group">
+<button type="submit" class="btn myButtons">Zarejestruj<i class="icon-user-add"></i></button>
+</div>
+
+</form>
+
+<button type="button" class="btn myButtons" onclick="location.href='/login'">Powrót<i class="icon-reply"></i></button>
+
+{% endblock %}
+
+
