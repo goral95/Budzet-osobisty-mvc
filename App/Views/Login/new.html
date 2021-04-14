@@ -1,0 +1,51 @@
+{% extends "base_before_login.html" %}
+
+{% block title %}Log in{% endblock %}
+
+{% block article_title %}Login page{% endblock %}
+
+{% block section_title %}LOGOWANIE{% endblock %}
+
+
+
+{% block body %}
+
+   <form method = "post" action = "/login/create">
+										
+	<div class="form-group">
+		<label for="email" class = "d-block">E-mail</label>
+		
+			<div class = "d-inline-block"><div class = "inputIcon align-top d-flex align-items-center justify-content-center"><i class="icon-mail-alt"></i></div></div><input type="email" class="form-control d-inline-block align-top" name ="email" placeholder="E-mail" value="{{ email }}" required>
+		
+	</div>
+
+	<div class="form-group">
+		<label for="password" class = "d-block">Hasło</label>
+		
+			<div class = "d-inline-block"><div class = "inputIcon align-top d-flex justify-content-center align-items-center"><i class="icon-key"></i></div></div><input type="password" class="form-control d-inline-block align-top" name="password" placeholder="Hasło" required>
+		
+	</div>
+	
+	<div class="form-group">
+			<label>
+				<input type = "checkbox" name = "remember_me" {% if remember_me %} checked = "checked" {% endif %}/> Pamiętaj mnie
+			</label>
+	</div>
+	
+	<div class = "mb-2"><a href = "/password/forgot"  style = "color: #ee9209;">Zapomniałeś hasło?</a></div>
+	
+	{% for message in flash_messages %}
+        <div class=" my-alert-{{ message.type }} mb-3">
+            {{ message.body }}
+        </div>
+    {% endfor %}
+	
+	<div class = "form-group">
+		<button type="submit" class="btn myButtons">Zaloguj się<i class="icon-login"></i></button>
+	</div>
+
+</form>
+
+<button type="button" class="btn myButtons" onclick="location.href='/rejestracja'">Rejestracja<i class="icon-up-big"></i></button>
+
+{% endblock %}

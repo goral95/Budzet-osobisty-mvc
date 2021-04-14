@@ -1,0 +1,26 @@
+{% extends "base_for_mails.html" %}
+
+{% block title %}Przywracanie hasła{% endblock %}
+
+{% block article_title %}Forgot Password{% endblock %}
+
+
+{% block body %}
+
+   <h1 class = "mt-3" style = "color: #ee9209;">Przywracanie hasła</h1>
+
+    <form method="post" action="/password/request-reset">
+
+        <div class = "form-group" >
+            <label for="inputEmail" class = "d-block">Email address</label>
+            <div class = "d-inline-block"><div class = "inputIcon align-top d-flex align-items-center justify-content-center"><i class="icon-mail-alt"></i></div></div><input type="email" class = "form-control d-inline-block align-top" id="inputEmail" name="email" placeholder="Email konta" autofocus required />
+        </div>
+
+        <button type="submit" class="btn myButtons">Wyślij reset hasła</button>
+		
+    </form>
+	
+	<button type="button" class="btn myButtons mt-3" onclick="location.href='/login'">Powrót<i class="icon-reply"></i></button>
+
+{% endblock %}
+
