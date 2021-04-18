@@ -1,0 +1,84 @@
+{% extends "base_after_login.html" %}
+
+{% block title %}Przychody{% endblock %}
+
+
+{% block js %}
+
+	<script src = "/js/dates.js"></script>
+
+{% endblock %}
+
+{% block dates %}
+
+	onload = "setActualDate('incomeDate');"
+
+{% endblock %}
+
+{% block body %}
+
+   <header><h2 class = "h3 mt-2 ">DODAWANIE PRZYCHODU</h2></header>
+									
+	<form class = "d-flex flex-column justify-content-center align-items-center" method = "post" action = "/incomes/add">
+		
+			<div class="form-group">
+				<label for="incomePrice" >Kwota (zł):</label>
+				<div class = "row align-items-center">
+				<div class = "inputIcon d-flex align-items-center justify-content-center"><i class="icon-tag"></i></div><input type="number" class="form-control " name="incomePrice" step = "0.01" min = "0.01" required  placeholder = "00,00">
+				</div>
+			</div>
+		
+			 <div class="form-group">
+				<label for="incomeDate" >Data</label>
+				<div class = "row align-items-center">
+				<div class = "inputIcon d-flex align-items-center justify-content-center"><i class="icon-calendar"></i></div><input type="date" class="form-control " name = "incomeDate" id="incomeDate"  required>
+				</div>
+			 </div>
+		  
+		  <fieldset class = "form-group border p-2 col-10 ">
+		  
+				<legend class="w-auto">Kategoria</legend>
+				
+				<div class="form-check  form-check-inline ">
+				  <input class="form-check-input" type="radio" name="incomeCategory" id = "incomeCategory1" value = "Wynagrodzenie" checked>
+				  <label class="form-check-label" for="incomeCategory1">Wynagrodzenie</label>
+				</div>
+				<div class="form-check form-check-inline ">
+				  <input class="form-check-input" type="radio" name="incomeCategory" id = "incomeCategory2" value = "Odsetki" >
+				  <label class="form-check-label" for="incomeCategory2">Odsetki</label>
+				</div>
+				<div class="form-check form-check-inline ">
+				  <input class="form-check-input" type="radio" name="incomeCategory" id = "incomeCategory3"  value = "Sprzedaż na allegro" >
+				  <label class="form-check-label" for="incomeCategory3">Sprzedaż na allegro</label>
+				</div>
+				<div class="form-check form-check-inline ">
+				  <input class="form-check-input" type="radio" name="incomeCategory" id = "incomeCategory4" value = "Inne" >
+				  <label class="form-check-label" for="incomeCategory4">Inne</label>
+				</div>
+			
+			</fieldset>
+			
+		 <div class="form-group">
+			<label for="remarkIncome">Komentarz (opcjonalnie):</label>
+			<div class = "row align-items-center">
+			<div class = "inputIcon d-flex align-items-center justify-content-center"><i class="icon-info"></i></div><input type="text" class="form-control" name="remarkIncome">
+			</div>
+		 </div>
+		<div class = "row justify-content-center">
+			<div class = "form-group mx-3">
+				<button type="submit" class="btn myButtons">Dodaj<i class="icon-ok"></i></button>
+			</div>
+			<div class = "form-group mx-3">
+				<button type="reset" class="btn myButtons">Usuń<i class="icon-cancel"></i></button>
+			</div>
+		</div>
+		
+		{% for message in flash_messages %}
+        <div class=" my-alert-{{ message.type }} mb-3">
+            {{ message.body }}
+        </div>
+		{% endfor %}
+		 
+	</form>
+
+{% endblock %}
