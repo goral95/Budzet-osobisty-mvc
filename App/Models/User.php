@@ -65,11 +65,12 @@ class User extends \Core\Model
             $stmt->bindValue(':activation_hash', $hashed_token, PDO::PARAM_STR);
 
             return $stmt->execute();
+
         }
 
         return false;
     }
-
+	
     /**
      * Validate current property values, adding valiation error messages to the errors array property
      *
@@ -379,20 +380,54 @@ class User extends \Core\Model
     {
         $token = new Token($value);
         $hashed_token = $token->getHash();
-
+		
+		 $db = static::getDB();
+		
+		$newUserIdQuery = $db -> query("SELECT id FROM users WHERE activation_hash = '$hashed_token'");
+		$newUserId = $newUserIdQuery->fetchColumn();
+		
+		User::setDefaultCategories($newUserId);
+		
         $sql = 'UPDATE users
                 SET is_active = 1,
                     activation_hash = null
                 WHERE activation_hash = :hashed_token';
 
-        $db = static::getDB();
+       
         $stmt = $db->prepare($sql);
 
         $stmt->bindValue(':hashed_token', $hashed_token, PDO::PARAM_STR);
 
         $stmt->execute();
     }
-
+	
+	public static function setDefaultCategories($newUserId){
+		$db = static::getDB();
+		$defaultExpenseCategoryQuery = $db -> query('SELECT * FROM expenses_category_default');
+		$defaultExpenseCategory = $defaultExpenseCategoryQuery -> fetchAll();
+		foreach($defaultExpenseCategory as $expenseCategory){
+			$writeDefaultExpenseCategoryToUserQuery = $db->prepare("INSERT INTO expenses_category_assigned_to_users VALUES (NULL, :newUserId , :expenseCategory)");
+			$writeDefaultExpenseCategoryToUserQuery->bindValue(':newUserId', $newUserId, PDO::PARAM_INT);
+			$writeDefaultExpenseCategoryToUserQuery->bindValue(':expenseCategory', $expenseCategory['name'], PDO::PARAM_STR);
+			$writeDefaultExpenseCategoryToUserQuery->execute();
+		}
+		$defaultIncomeCategoryQuery = $db -> query('SELECT * FROM incomes_category_default');
+		$defaultIncomeCategory = $defaultIncomeCategoryQuery -> fetchAll();
+		foreach($defaultIncomeCategory as $incomeCategory){
+			$writeDefaultIncomeCategoryToUserQuery = $db->prepare("INSERT INTO incomes_category_assigned_to_users VALUES (NULL, :newUserId , :incomeCategory)");
+			$writeDefaultIncomeCategoryToUserQuery->bindValue(':newUserId', $newUserId, PDO::PARAM_INT);
+			$writeDefaultIncomeCategoryToUserQuery->bindValue(':incomeCategory', $incomeCategory['name'], PDO::PARAM_STR);
+			$writeDefaultIncomeCategoryToUserQuery->execute();
+		}
+		$defaultPaymentMethodsQuery = $db -> query('SELECT * FROM payment_methods_default');
+		$defaultPaymentMethods = $defaultPaymentMethodsQuery -> fetchAll();
+		foreach($defaultPaymentMethods as $paymentMethod){
+			$writeDefaultPaymentMethodsToUserQuery = $db->prepare("INSERT INTO payment_methods_assigned_to_users VALUES (NULL, :newUserId , :paymentMethod)");
+			$writeDefaultPaymentMethodsToUserQuery->bindValue(':newUserId', $newUserId, PDO::PARAM_INT);
+			$writeDefaultPaymentMethodsToUserQuery->bindValue(':paymentMethod', $paymentMethod['name'], PDO::PARAM_STR);
+			$writeDefaultPaymentMethodsToUserQuery->execute();
+		}
+	}
     /**
      * Update the user's profile
      *

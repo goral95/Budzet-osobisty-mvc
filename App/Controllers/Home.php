@@ -19,6 +19,8 @@ class Home extends Authenticated
      */
     public function indexAction()
     {
-        View::renderTemplate('Home/index.html');
+        View::renderTemplate('Home/index.html', [
+            'name' => $this->user->name
+        ]);
     }
 }
