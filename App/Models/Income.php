@@ -31,4 +31,11 @@ class Income extends \Core\Model{
 		
 		return $addNewIncomeQuery->execute();
 	}
+	
+	public static function getIncomesForBalance($startDate, $endDate , $userId){
+		$db = static::getDB();
+		$incomesFromPeriodQuery = $db -> query("SELECT incomes_category_assigned_to_users.name , SUM(incomes.amount) FROM incomes_category_assigned_to_users, incomes WHERE incomes_category_assigned_to_users.id = incomes.income_category_assigned_to_user_id AND incomes.user_id = '{$userId}' AND incomes.date_of_income >= '{$startDate}' AND incomes.date_of_income <= '{$endDate}' GROUP BY incomes_category_assigned_to_users.name ORDER BY SUM(incomes.amount) DESC ");
+		$incomesFromPeriod= $incomesFromPeriodQuery ->fetchAll();
+		return $incomesFromPeriod;
+	}
 }

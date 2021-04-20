@@ -2,10 +2,8 @@
 
 {% block title %}Bilans{% endblock %}
 
+{% block piecharts %}
 
-{% block js %}
-
-	<script src = "/js/dates.js"></script>
 	<script type = "text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> 
 	<script type = "text/javascript">
 	
@@ -17,20 +15,20 @@
 		function drawChart() {
 		  var dataIncome = google.visualization.arrayToDataTable([
 		  ['Task', 'Cost'],
-		  <?php 
-		  foreach ($incomesFromPeriod as $income){
-			echo "['".$income['name']."',".$income['SUM(incomes.amount)']."],";
-		  }
-		  ?>
+		 {% for income in incomesFromPeriod %}
+												
+		[ ' {{income.name}} ', {{income.1}} ],
+												
+		{% endfor %}
 		]);
 
 		var dataExpense = google.visualization.arrayToDataTable([
 		  ['Task', 'Cost'],
-		  <?php 
-		  foreach ($expensesFromPeriod as $expense){
-			echo "['".$expense['name']."',".$expense['SUM(expenses.amount)']."],";
-		  }
-		  ?>
+		  {% for expense in expensesFromPeriod %}
+												
+		[ ' {{expense.name}} ', {{expense.1}} ],
+												
+		{% endfor %}
 		]);
 
 		  // Optional; add a title and set the width and height of the chart
@@ -38,15 +36,15 @@
 			  title:'Przychody', 
 			  backgroundColor:'transparent', 
 			  pieSliceBorderColor: '#bfbfbf',
-			  width: 600,
-			  height: 400
+			  height: 500,
+			  legend: {position: 'none'}
 			  };
 			var optionsExpense = {
 			  title:'Wydatki', 
 			  backgroundColor:'transparent', 
 			  pieSliceBorderColor: '#bfbfbf',
-			  width: 600,
-			  height: 400
+			  height: 500,
+			  legend: {position: 'none'}
 			  };
 
 		  // Display the chart inside the <div> element with id="piechart"
@@ -60,6 +58,12 @@
 
 {% endblock %}
 
+{% block js %}
+
+	<script src = "/js/dates.js"></script>
+
+{% endblock %}
+
 {% block dates %}
 
 	 onload = "createPeriodDates();"
@@ -70,9 +74,9 @@
 
    <header><h2 class = "h3 mt-2 ">PRZEGLĄD BILANSU</h2></header>
 									
-									<section class = "my-border-bottom p-3">
+									<section class = "{% if incomesFromPeriod and expensesFromPeriod %} my-border-bottom {% endif %} p-3">
 									
-									<form class = "d-flex flex-column justify-content-center align-items-center m-1" method = "post" name = "tables">
+									<form class = "d-flex flex-column justify-content-center align-items-center m-1" method = "post" name = "tables" action = "/balance/show">
 										
 											<div class="form-group">
 											  <label for="period">Okres:</label>
@@ -108,104 +112,107 @@
 									
 									</section>
 									
-									<?php
-												if (isset($_SESSION['noActivity'])) {
-													echo '<div style = "color: red; font-size: 14px; margin-bottom: 5px;" >'.$_SESSION['noActivity'].'</div>';
-													unset($_SESSION['noActivity']);
-												}else{
-
+									{% if incomesFromPeriod is empty and expensesFromPeriod is empty %}
+									
+										<div  class = "mt-3 w-100" style = "color: red;">Brak aktywności w tym okresie</div>
+										
+									{%else%}
+									
+										<section class = "my-border-bottom p-3">
+									
+										<div class = "row g-0 ">
+										<h3 class = "sr-only">Tables</h3>
+										
+										{% if incomesFromPeriod %}
+										
+											<div class = "col-xl-6 d-flex justify-content-center mt-3 h-100">
+											
+												<table id = "tableIncome">
+								
+													<caption>Przychody</caption>
+													<tr>
+														<th>Kategoria</th>
+														<th>Kwota</th>
+													</tr>
 													
-												}													
+													{% for income in incomesFromPeriod %}
+													
+														<tr><td> {{income.name}} </td><td>{{ income.1 }}</td></tr>
+													
+													{% endfor %}
+													
+												</table>
+											
+											</div>
+											
+										{% endif %}	
+										{% if expensesFromPeriod %}
+										
+											<div class = "col-xl-6 d-flex justify-content-center mt-3 h-100">
+											
+												<table id = "tableExpense">
+								
+													<caption>Wydatki</caption>
+													<tr>
+														<th>Kategoria</th>
+														<th>Kwota</th>
+													</tr>
+													
+													{% for expense in expensesFromPeriod %}
+													
+														<tr><td> {{expense.name}} </td><td>{{ expense.1 }}</td></tr>
 												
+													{% endfor %}
+												
+												</table>
 											
-									?>
-									
+											</div>
+											
+										{% endif %}
+											
+										</div>
+									</section>
+										
 									<section class = "my-border-bottom p-3">
-								
-									<div class = "row g-0 ">
-									<h3 class = "sr-only">Tables</h3>
-										<div class = "col-xl-6 d-flex justify-content-center mt-3">
-										
-											<table id = "tableIncome">
-							
-												<caption>Przychody</caption>
-												<tr>
-													<th>Kategoria</th>
-													<th>Kwota</th>
-												</tr>
-												<?php
-												$incomeSum = 0;
-													foreach ($incomesFromPeriod as $income) {
-														echo "<tr><td>{$income['name']}</td><td>{$income['SUM(incomes.amount)']}</td></tr>";
-														$incomeSum = $incomeSum + $income['SUM(incomes.amount)'];
-													}
-												?>
-											</table>
-										
-										</div>
-										
-										<div class = "col-xl-6 d-flex justify-content-center mt-3">
-										
-											<table id = "tableExpense">
-							
-												<caption>Wydatki</caption>
-												<tr>
-													<th>Kategoria</th>
-													<th>Kwota</th>
-												</tr>
-												<?php
-												$expenseSum = 0;
-													foreach ($expensesFromPeriod as $expense) {
-														echo "<tr><td>{$expense['name']}</td><td>{$expense['SUM(expenses.amount)']}</td></tr>";
-														$expenseSum = $expenseSum + $expense['SUM(expenses.amount)'];
-													}
-												?>
+									
+										<div class = "row g-0 ">
+										<h3 class = "sr-only">Piecharts</h3>
+											<div class = "col d-flex justify-content-center mt-3">
 											
-											</table>
+												<div id = "piechartIncome"></div>
+											
+											</div>
 										
-										</div>
-									</div>
-								</section>
-									
-								<section class = "my-border-bottom p-3">
-								
-									<div class = "row g-0 ">
-									<h3 class = "sr-only">Piecharts</h3>
-										<div class = "col d-flex justify-content-center mt-3">
-										
-											<div id = "piechartIncome"></div>
-										
+											<div class = "col d-flex justify-content-center mt-3">
+											
+												<div id = "piechartExpense"></div>
+											
+											</div>
 										</div>
 										
-										<div class = "col d-flex justify-content-center mt-3">
+									</section>
+									
+									<section>
+									
 										
-											<div id = "piechartExpense"></div>
-										
+										<h3 class = "sr-only">Summary</h3>
+										<div class = "row justify-content-center">
+										<div class = "d-flex flex-column justify-content-center align-items-center summary">
+											
+											Suma przychodów: <span  style = "color: green;">{{ incomeSum }}</span> <br />
+											Suma wydatków: <span  style = "color: red;">{{ expenseSum }}</span> <br />
+											Bilans: {% if balance >=0 %}
+											<span  style = "color: green;">{{ balance }}</span> <br />
+											<span style = "color: green;">Gratulacje! Dobrze dbasz o budżet.</span>
+											{% else %} 
+											<span  style = "color: red;">{{ balance }}</span> <br />
+											<span style = "color: red;">Uważaj! Wpadasz w długi.</span>
+											{% endif %}
+											
 										</div>
-									</div>
-									
-								</section>
-								
-								<section>
-								
-									
-									<h3 class = "sr-only">Summary</h3>
-									<div class = "row justify-content-center">
-									<div class = "d-flex flex-column justify-content-center align-items-center summary">
-										
-										Suma przychodów: <span  style = "color: green;"><?php echo $incomeSum;?></span> <br />
-										Suma wydatków: <span  style = "color: red;"><?php echo $expenseSum;?></span> <br />
-										Bilans: <?= ($incomeSum - $expenseSum) >= 0 ? '<span  style = "color: green;">'.$incomeSum - $expenseSum.'</span> <br />
-										<span style = "color: green;">Gratulacje! Dobrze dbasz o budżet.</span>' :   '<span  style = "color: red;">'.$incomeSum - $expenseSum.'</span> <br />
-										<span style = "color: red;">Uważaj! Wpadasz w długi.</span>'?>
-										
-										
-										<div class = "mt-3 mb-3">
-											<button type="button" class="btn   myButtons" onclick = "window.location.href='balance.php';">Powrót<i class="icon-reply"></i></button>
 										</div>
-									</div>
-									</div>
-									
-								</section>
+										
+									</section>
+								{% endif %}
 
 {% endblock %}
