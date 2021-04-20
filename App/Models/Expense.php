@@ -34,4 +34,11 @@ class Expense extends \Core\Model{
 		
 		return $addNewExpenseQuery->execute();
 	}
+	
+	public static function getExpensesForBalance($startDate, $endDate , $userId){
+		$db = static::getDB();
+		$expensesFromPeriodQuery = $db -> query("SELECT expenses_category_assigned_to_users.name , SUM(expenses.amount) FROM expenses_category_assigned_to_users, expenses WHERE expenses_category_assigned_to_users.id = expenses.expense_category_assigned_to_user_id AND expenses.user_id = '{$userId}' AND expenses.date_of_expense >= '{$startDate}' AND expenses.date_of_expense <= '{$endDate}' GROUP BY expenses_category_assigned_to_users.name ORDER BY SUM(expenses.amount) DESC ");
+		$expensesFromPeriod= $expensesFromPeriodQuery ->fetchAll();
+		return $expensesFromPeriod;
+	}
 }
