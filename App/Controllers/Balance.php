@@ -5,9 +5,6 @@ namespace App\Controllers;
 use \Core\View;
 use \App\Models\Expense;
 use \App\Models\Income;
-use \App\Flash;
-
-
 /**
  * Home controller
  *
@@ -21,15 +18,17 @@ class Balance extends Authenticated{
      * @return void
      */
     public function newAction(){
-		
-        View::renderTemplate('Balance/index.html', [
-            'chosen' => 'balance'
-        ]);
+		$dates = static::getCurrentDateAction();
+        $this->showTables($dates['startDate'], $dates['endDate']);
     }
 	
 	public function showAction(){
-		$incomesFromPeriod = Income::getIncomesForBalance($_POST['startDate'], $_POST['endDate'] , $this->user->id);
-		$expensesFromPeriod = Expense::getExpensesForBalance($_POST['startDate'], $_POST['endDate'] , $this->user->id);
+		$this->showTables($_POST['startDate'], $_POST['endDate']);
+    }
+		
+	public function showTables($startDate, $endDate){
+		$incomesFromPeriod = Income::getIncomesForBalance($startDate, $endDate , $this->user->id);
+		$expensesFromPeriod = Expense::getExpensesForBalance($startDate, $endDate , $this->user->id);
 		
 		$incomeSum = static::calculateSum($incomesFromPeriod);
 		$expenseSum = static::calculateSum($expensesFromPeriod);
@@ -39,8 +38,8 @@ class Balance extends Authenticated{
 			'chosen' => 'balance' ,
             'incomesFromPeriod' => $incomesFromPeriod,
 			'expensesFromPeriod' => $expensesFromPeriod,
-			'startDate' => $_POST['startDate'],
-			'endDate' => $_POST['endDate'],
+			'startDate' => $startDate,
+			'endDate' => $endDate,
 			'incomeSum' => $incomeSum,
 			'expenseSum' => $expenseSum,
 			'balance' => $balance
@@ -55,4 +54,23 @@ class Balance extends Authenticated{
 		}
 		return $sum;
 	}
+	
+	public static function getCurrentDateAction(){
+		$month = date("m");
+		$year = date("Y");
+		$dates['startDate'] = $year . "-" . $month . "-01";
+		if($month == 2){
+		if($year % 4 == 0 &  $year % 100 != 0 || $year % 400 == 0)
+			$dates['endDate'] = $year . "-" . $month . "-29";
+		else
+			$dates['endDate'] = $year . "-" . $month . "-28";
+		}
+		else if ($month == 4 || $month == 6 || $month == 9 || $month == 11)
+			$dates['endDate'] = $year . "-" . $month . "-30";
+		else
+			$dates['endDate'] = $year . "-" . $month . "-31";
+		
+		return $dates;
+	}
 }
+

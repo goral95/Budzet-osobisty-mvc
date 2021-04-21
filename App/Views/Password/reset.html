@@ -24,7 +24,17 @@
 						maxlength: 20,
                         validPassword: true
                     }
-                }
+                },
+				errorElement : 'div' ,
+				errorClass: 'my-alert-warning', 
+				errorPlacement: function(error, element) {
+				  var placement = $(element).data('error');
+				  if (placement) {
+					$(placement).append(error)
+				  } else {
+					error.insertAfter(element);
+				  }
+				}
             });
 
 
@@ -60,8 +70,12 @@
         <div class="form-group">
 			<label for="inputPassword" class = "d-block">Hasło</label>
 
-			<div class = "d-inline-block"><div class = "inputIcon align-top d-flex align-items-center justify-content-center"><i class="icon-key"></i></div></div><input type="password" class="form-control d-inline-block align-top" name ="password" id = "inputPassword" placeholder="Hasło" required>
-
+			<div class = "d-inline-block"><div class = "inputIcon align-top d-flex align-items-center justify-content-center"><i class="icon-key"></i></div></div><input type="password" class="form-control d-inline-block align-top mb-2" name ="password" id = "inputPassword" data-error="#errPass" placeholder="Hasło" required>
+			
+			<div class="errorTxt">
+				<span id="errPass"></span>
+			</div>
+			
 		</div>
 
         <button type="submit" class="btn myButtons">Reset hasła</button>
