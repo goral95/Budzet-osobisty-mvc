@@ -62,7 +62,7 @@ class Login extends \Core\Controller
 	
 	public function showLogoutMessageAction(){
 		// Unset all of the session variables.
-		Flash::addMessage('Logout successful');
+		Flash::addMessage('Wylogowano pomyślnie');
 		
 		$this -> redirect('/');
 	}

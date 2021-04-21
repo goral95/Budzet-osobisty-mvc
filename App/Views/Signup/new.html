@@ -38,7 +38,17 @@
                     email: {
                         remote: 'Email jest już zajęty'
                     }
-                }
+                },
+				errorElement : 'div' ,
+				errorClass: 'my-alert-warning', 
+				errorPlacement: function(error, element) {
+				  var placement = $(element).data('error');
+				  if (placement) {
+					$(placement).append(error)
+				  } else {
+					error.insertAfter(element);
+				  }
+				}
             });
 
 
@@ -72,7 +82,11 @@
 <div class="form-group">
 	<label for="name" class = "d-block">Imię</label>
 	
-	<div class = "d-inline-block"><div class = "inputIcon align-top d-flex align-items-center justify-content-center"><i class="icon-user"></i></div></div><input type="text" class="form-control d-inline-block align-top" name ="name" placeholder="Imię" required value="{{ user.name }}">
+	<div class = "d-inline-block"><div class = "inputIcon align-top d-flex align-items-center justify-content-center"><i class="icon-user"></i></div></div><input type="text" class="form-control d-inline-block align-top mb-2" name ="name" data-error="#errName" placeholder="Imię" required value="{{ user.name }}">
+	
+	<div class="errorTxt">
+		<span id="errName"></span>
+	</div>
 	
 </div>
 
@@ -80,17 +94,27 @@
 <div class="form-group">
 	<label for="email" class = "d-block">E-mail</label>
 
-	<div class = "d-inline-block"><div class = "inputIcon align-top d-flex align-items-center justify-content-center"><i class="icon-mail-alt"></i></div></div><input type="email" class="form-control d-inline-block align-top" name ="email" placeholder="E-mail"  
+	<div class = "d-inline-block"><div class = "inputIcon align-top d-flex align-items-center justify-content-center"><i class="icon-mail-alt"></i></div></div><input type="email" class="form-control d-inline-block align-top mb-2" name ="email" data-error="#errEmail" placeholder="E-mail"  
 	value="{{ user.email }}" required>
+	
+	<div class="errorTxt">
+		<span id="errEmail" ></span>
+	</div>
 
 </div>
 
 <div class="form-group">
 	<label for="inputPassword" class = "d-block">Hasło</label>
 
-	<div class = "d-inline-block"><div class = "inputIcon align-top d-flex align-items-center justify-content-center"><i class="icon-key"></i></div></div><input type="password" class="form-control d-inline-block align-top" name ="password" id = "inputPassword" placeholder="Hasło" required>
+	<div class = "d-inline-block"><div class = "inputIcon align-top d-flex align-items-center justify-content-center"><i class="icon-key"></i></div></div><input type="password" class="form-control d-inline-block align-top mb-2" name ="password" data-error="#errPass" id = "inputPassword" placeholder="Hasło" required>
+	
+	<div class="errorTxt">
+		<span id="errPass"></span>
+	</div>
+
 
 </div>
+
 
 {% for message in flash_messages %}
 	<div class=" my-alert-{{ message.type }} mb-3">
