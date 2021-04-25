@@ -7,9 +7,8 @@
 {% block section_title %}REJESTRACJA{% endblock %}
 
 {% block js %}
-	<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/jquery.validate.min.js"></script>
+	<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/jquery.validate.min.js"></script>
 	<script src = "/js/messages_pl.js"</script>
-    <script src="/js/hideShowPassword.min.js"></script>
 	<script src="/js/app.js"></script>
     <script>
    
@@ -44,20 +43,11 @@
 				errorPlacement: function(error, element) {
 				  var placement = $(element).data('error');
 				  if (placement) {
-					$(placement).append(error)
+					$(placement).append(error);
 				  } else {
 					error.insertAfter(element);
 				  }
 				}
-            });
-
-
-            /**
-              * Show password toggle button
-              */
-            $('#inputPassword').hideShowPassword({
-                show: false,
-                innerToggle: 'focus'
             });
         });
     </script>
