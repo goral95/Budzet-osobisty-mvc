@@ -20,11 +20,16 @@ class Mail
      *
      * @return mixed
      */
-    public static function send($to, $subject, $message)
-    {
-		$headers[] = 'MIME-Version: 1.0';
-		$headers[] = 'Content-type: text/html; charset=iso-8859-1';
-        $headers[] = "From: Budżet osobisty";
-		mail($to, $subject, $message, implode("\r\n", $headers));
-    }
+    public static function send($to, $subject, $message){
+	$headers[] = 'MIME-Version: 1.0';
+	$headers[] = "Organization: Budżet osobisty";
+	$headers[] = "X-Priority: 3";
+	$headers[] = 'Content-type: text/html; charset=utf-8';
+	$headers[] = 'Content-Transfer-Encoding: 8bit';
+	$headers[] = 'From: kontakt@lukaszgorczyk.pl';
+	$headers[] = 'Reply-To: kontakt@lukaszgorczyk.pl';
+	$headers[] = "Return-Path: kontakt@lukaszgorczyk.pl"; 
+	$headers[] = 'X-Mailer: PHP/' . phpversion();
+     mail($to, $subject, $message, implode("\r\n", $headers));
+	}
 }
