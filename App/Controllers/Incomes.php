@@ -21,9 +21,10 @@ class Incomes extends Authenticated
      */
     public function newAction()
     {
-		
+		$incomesCategoryForUser = Income::getIncomesCategoryForUser($this->user->id);
         View::renderTemplate('Incomes/index.html', [
-            'chosen' => 'income'
+            'chosen' => 'income' ,
+			'incomeCategory' => $incomesCategoryForUser
         ]);
     }
 	

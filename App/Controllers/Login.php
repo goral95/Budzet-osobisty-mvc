@@ -22,7 +22,11 @@ class Login extends \Core\Controller
      */
     public function newAction()
     {
+		if(Auth::getUser()){
+			$this -> redirect ('/');
+		}else{
         View::renderTemplate('Login/new.html');
+		}
     }
 
     /**
