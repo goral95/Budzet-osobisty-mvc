@@ -35,27 +35,28 @@
 				</div>
 			 </div>
 		  
-		  <fieldset class = "form-group border p-2 col-10 ">
+		  <fieldset class = "form-group border p-2 col-12 ">
 		  
 				<legend class="w-auto">Kategoria</legend>
 				
-				<div class="form-check  form-check-inline ">
-				  <input class="form-check-input" type="radio" name="incomeCategory" id = "incomeCategory1" value = "Wynagrodzenie" checked>
-				  <label class="form-check-label" for="incomeCategory1">Wynagrodzenie</label>
+				<div class = "row text-left ml-4">
+				{% for incomeCategory in incomeCategory %}
+				
+					{% if loop.first %}
+					<div class="form-check  offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4 ">
+					  <input class="form-check-input" type="radio" name="incomeCategory" id = "{{incomeCategory.name}}" value = "{{incomeCategory.name}}" checked>
+					  <label class="form-check-label" for="{{incomeCategory.name}}">{{incomeCategory.name}}</label>
+					</div>
+					{% else %}
+					<div class="form-check  offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4 ">
+					  <input class="form-check-input" type="radio" name="incomeCategory" id = "{{incomeCategory.name}}" value = "{{incomeCategory.name}}">
+					  <label class="form-check-label" for="{{incomeCategory.name}}">{{incomeCategory.name}}</label>
+					</div>
+					{% endif %}
+					
+				{% endfor %}
 				</div>
-				<div class="form-check form-check-inline ">
-				  <input class="form-check-input" type="radio" name="incomeCategory" id = "incomeCategory2" value = "Odsetki" >
-				  <label class="form-check-label" for="incomeCategory2">Odsetki</label>
-				</div>
-				<div class="form-check form-check-inline ">
-				  <input class="form-check-input" type="radio" name="incomeCategory" id = "incomeCategory3"  value = "Sprzedaż na allegro" >
-				  <label class="form-check-label" for="incomeCategory3">Sprzedaż na allegro</label>
-				</div>
-				<div class="form-check form-check-inline ">
-				  <input class="form-check-input" type="radio" name="incomeCategory" id = "incomeCategory4" value = "Inne" >
-				  <label class="form-check-label" for="incomeCategory4">Inne</label>
-				</div>
-			
+				
 			</fieldset>
 			
 		 <div class="form-group">

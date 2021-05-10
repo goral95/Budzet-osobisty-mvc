@@ -38,4 +38,11 @@ class Income extends \Core\Model{
 		$incomesFromPeriod= $incomesFromPeriodQuery ->fetchAll();
 		return $incomesFromPeriod;
 	}
+	
+	public static function getIncomesCategoryForUser($userId){
+		$db = static::getDB();
+		$query = $db -> query("SELECT name FROM `incomes_category_assigned_to_users`  WHERE user_id = '{$userId}' AND deleted = 0");
+		$incomesCategoryForUser= $query ->fetchAll();
+		return $incomesCategoryForUser;
+	}
 }

@@ -6,6 +6,22 @@
 {% block js %}
 
 	<script src = "/js/dates.js"></script>
+	<script>
+		function checkCategoryLimit(){
+			var expensePrice = $('input[name="expensePrice"]').val();
+			var expenseCategory = $('input[name="expenseCategory"]:checked').val();
+			$.post("/expenses/limit" , {
+				expensePrice: expensePrice,
+				expenseCategory: expenseCategory
+			}, function( data, status){
+				$("#limit").html(data);
+			});
+		};
+		$(document).ready(function(){
+		$(".target").change(checkCategoryLimit).keyup(checkCategoryLimit);
+		});
+	
+	</script>
 
 {% endblock %}
 
@@ -24,9 +40,11 @@
 			<div class="form-group">
 				<label for="expensePrice" >Kwota (zł):</label>
 				<div class = "row align-items-center">
-				<div class = "inputIcon d-flex align-items-center justify-content-center"><i class="icon-tag"></i></div><input type="number" class="form-control " name="expensePrice" step = "0.01" min = "0.01" required  placeholder = "00,00">
+				<div class = "inputIcon d-flex align-items-center justify-content-center"><i class="icon-tag"></i></div><input type="number" class="form-control target" name="expensePrice" step = "0.01" min = "0.01" required  placeholder = "00,00">
 				</div>
 			</div>
+			
+			<div id = "limit"></div>
 		
 			 <div class="form-group">
 				<label for="expenseDate" >Data</label>
@@ -35,96 +53,49 @@
 				</div>
 			 </div>
 		  
-		  <fieldset class = "form-group border p-2 col-10 ">
+		  <fieldset class = "form-group border p-2 col-9 ">
 				<legend class="w-auto">Sposób płatności</legend>
+				<div class = "row text-left ml-4">
 				
-				<div class="form-check  form-check-inline ">
-				  <input class="form-check-input" type="radio" name="paidType" id = "paidType1" value = "Gotówka" checked >
-				  <label class="form-check-label" for="paidType1" >Gotówka</label>
-				</div>
-				<div class="form-check form-check-inline ">
-				  <input class="form-check-input" type="radio" name="paidType" id = "paidType2" value = "Karta kredytowa">
-				  <label class="form-check-label" for="paidType2" >Karta kredytowa</label>
-				</div>
-				<div class="form-check form-check-inline ">
-				  <input class="form-check-input" type="radio" name="paidType" id = "paidType3" value = "Karta debetowa">
-				  <label class="form-check-label" for="paidType3" >Karta debetowa</label>
-				</div>
+				{% for paymentMethods in paymentMethods %}
 				
+					{% if loop.first %}
+					<div class="form-check  offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4">
+					  <input class="form-check-input" type="radio" name="paidType" id = "{{paymentMethods.name}}" value = "{{paymentMethods.name}}" checked >
+					  <label class="form-check-label" for="{{paymentMethods.name}}" >{{paymentMethods.name}}</label>
+					</div>
+					{% else %}
+					<div class="form-check  offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4">
+					  <input class="form-check-input" type="radio" name="paidType" id = "{{paymentMethods.name}}" value = "{{paymentMethods.name}}"  >
+					  <label class="form-check-label" for="{{paymentMethods.name}}" >{{paymentMethods.name}}</label>
+					</div>
+					{% endif %}
+					
+				{% endfor %}
+				</div>
 		
 			</fieldset>
 			
 			<fieldset class = "form-group border p-3 col-12 ">
 				<legend class="w-auto">Kategoria</legend>
 				<div class = "row text-left ml-4">
+				
+				{% for expenseCategory in expenseCategory %}
+				
+					{% if loop.first %}
 					<div class="form-check offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4  col-xl-3 ">
-					  <input class="form-check-input" type="radio" name="expenseCategory" id = "category1" value = "Jedzenie" checked>
-					  <label class="form-check-label" for="category1">Jedzenie</label>
+					  <input class="form-check-input target" type="radio" name="expenseCategory" id = "{{expenseCategory.name}}" value = "{{expenseCategory.name}}" checked>
+					  <label class="form-check-label" for="{{expenseCategory.name}}">{{expenseCategory.name}}</label>
 					</div>
-					<div class="form-check   offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4 col-xl-3">
-					  <input class="form-check-input" type="radio" name="expenseCategory" id = "category2" value = "Mieszkanie">
-					  <label class="form-check-label" for="category2">Mieszkanie</label>
+					{% else %}
+					<div class="form-check offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4  col-xl-3 ">
+					  <input class="form-check-input target" type="radio" name="expenseCategory" id = "{{expenseCategory.name}}" value = "{{expenseCategory.name}}">
+					  <label class="form-check-label" for="{{expenseCategory.name}}">{{expenseCategory.name}}</label>
 					</div>
-					<div class="form-check   offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4 col-xl-3">
-					  <input class="form-check-input" type="radio" name="expenseCategory" id = "category3" value = "Transport">
-					  <label class="form-check-label" for="category3">Transport</label>
-					</div>
-					<div class="form-check   offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4 col-xl-3">
-					  <input class="form-check-input" type="radio" name="expenseCategory" id = "category4" value = "Telekomunikacja">
-					  <label class="form-check-label" for="category4">Telekomunikacja</label>
-					</div>
-					<div class="form-check   offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4 col-xl-3">
-					  <input class="form-check-input" type="radio" name="expenseCategory" id = "category5" value = "Opieka zdrowotna">
-					  <label class="form-check-label" for="category5">Opieka zdrowotna</label>
-					</div>
-					<div class="form-check   offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4 col-xl-3">
-					  <input class="form-check-input" type="radio" name="expenseCategory" id = "category6" value = "Ubrania">
-					  <label class="form-check-label" for="category6">Ubrania</label>
-					</div>
-					<div class="form-check   offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4 col-xl-3">
-					  <input class="form-check-input" type="radio" name="expenseCategory" id = "category7" value = "Higiena">
-					  <label class="form-check-label" for="category7">Higiena</label>
-					</div>
-					<div class="form-check   offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4 col-xl-3">
-					  <input class="form-check-input" type="radio" name="expenseCategory" id = "category8" value = "Dzieci">
-					  <label class="form-check-label" for="category8">Dzieci</label>
-					</div>
-					<div class="form-check   offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4 col-xl-3">
-					  <input class="form-check-input" type="radio" name="expenseCategory" id = "category9" value = "Rozrywka">
-					  <label class="form-check-label" for="category9">Rozrywka</label>
-					</div>
-					<div class="form-check   offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4 col-xl-3">
-					  <input class="form-check-input" type="radio" name="expenseCategory" id = "category10" value = "Wycieczka">
-					  <label class="form-check-label" for="category10">Wycieczka</label>
-					</div>
-					<div class="form-check   offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4 col-xl-3">
-					  <input class="form-check-input" type="radio" name="expenseCategory" id = "category11" value = "Szkolenia">
-					  <label class="form-check-label" for="category11">Szkolenia</label>
-					</div>
-					<div class="form-check   offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4 col-xl-3">
-					  <input class="form-check-input" type="radio" name="expenseCategory" id = "category12" value = "Ksiazki">
-					  <label class="form-check-label" for="category12">Książki</label>
-					</div>
-					<div class="form-check   offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4 col-xl-3">
-					  <input class="form-check-input" type="radio" name="expenseCategory" id = "category13" value = "Oszczędności">
-					  <label class="form-check-label" for="category13">Oszczędności</label>
-					</div>
-					<div class="form-check   offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4 col-xl-3">
-					  <input class="form-check-input" type="radio" name="expenseCategory" id = "category14" value = "Na emeryture">
-					  <label class="form-check-label" for="category14">Na emeryture</label>
-					</div>
-					<div class="form-check   offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4 col-xl-3">
-					  <input class="form-check-input" type="radio" name="expenseCategory" id = "category15" value = "Spłata długów">
-					  <label class="form-check-label" for="category15">Spłata długów</label>
-					</div>
-					<div class="form-check   offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4 col-xl-3">
-					  <input class="form-check-input" type="radio" name="expenseCategory" id = "category16" value = "Darowizna">
-					  <label class="form-check-label" for="category16">Darowizna</label>
-					</div>
-					<div class="form-check   offset-3 offset-sm-4 offset-md-0 col-md-6 col-lg-4 col-xl-3">
-					  <input class="form-check-input" type="radio" name="expenseCategory" id = "category17" value = "Inne">
-					  <label class="form-check-label" for="category17">Inne</label>
-					</div>
+					{% endif %}
+		
+				{% endfor %}
+					
 				</div>
 				
 			</fieldset>
@@ -151,5 +122,8 @@
 		{% endfor %}
 		 
 	</form>
+	
+				
+	
 
 {% endblock %}

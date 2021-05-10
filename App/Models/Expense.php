@@ -41,4 +41,32 @@ class Expense extends \Core\Model{
 		$expensesFromPeriod= $expensesFromPeriodQuery ->fetchAll();
 		return $expensesFromPeriod;
 	}
+	
+	public static function getExpensesCategoryForUser($userId){
+		$db = static::getDB();
+		$query = $db -> query("SELECT name FROM `expenses_category_assigned_to_users`  WHERE user_id = '{$userId}' AND deleted = 0");
+		$expensesCategoryForUser= $query ->fetchAll();
+		return $expensesCategoryForUser;
+	}
+	
+	public static function getPaymentMethodsForUser($userId){
+		$db = static::getDB();
+		$query = $db -> query("SELECT name FROM `payment_methods_assigned_to_users` WHERE user_id = '{$userId}' AND deleted = 0");
+		$paymentMethodsForUser= $query ->fetchAll();
+		return $paymentMethodsForUser;
+	}
+	
+	public static function getCategoryLimit($expenseCategory, $userId){
+		$db = static::getDB();
+		$query = $db -> query("SELECT category_limit FROM `expenses_category_assigned_to_users` WHERE user_id = '{$userId}' AND name = '{$expenseCategory}'");
+		$categoryLimit= $query ->fetchColumn();
+		return $categoryLimit;
+	}
+	
+	public static function getExpenseSumForLimitCategory($expenseCategory, $userId, $startDate, $endDate){
+		$db = static::getDB();
+		$query = $db -> query("SELECT SUM(expenses.amount) FROM expenses_category_assigned_to_users, expenses WHERE expenses_category_assigned_to_users.id = expenses.expense_category_assigned_to_user_id AND expenses.user_id = '{$userId}' AND expenses_category_assigned_to_users.name = '{$expenseCategory}' AND expenses.date_of_expense >= '{$startDate}' AND expenses.date_of_expense <= '{$endDate}' ");
+		$expenseSumForLimitCategory= $query ->fetchColumn();
+		return $expenseSumForLimitCategory;
+	}
 }
