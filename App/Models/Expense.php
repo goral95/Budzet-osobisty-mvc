@@ -44,14 +44,14 @@ class Expense extends \Core\Model{
 	
 	public static function getExpensesCategoryForUser($userId){
 		$db = static::getDB();
-		$query = $db -> query("SELECT name FROM `expenses_category_assigned_to_users`  WHERE user_id = '{$userId}' AND deleted = 0");
+		$query = $db -> query("SELECT id, name, category_limit FROM `expenses_category_assigned_to_users`  WHERE user_id = '{$userId}' AND deleted = 0");
 		$expensesCategoryForUser= $query ->fetchAll();
 		return $expensesCategoryForUser;
 	}
 	
 	public static function getPaymentMethodsForUser($userId){
 		$db = static::getDB();
-		$query = $db -> query("SELECT name FROM `payment_methods_assigned_to_users` WHERE user_id = '{$userId}' AND deleted = 0");
+		$query = $db -> query("SELECT id, name FROM `payment_methods_assigned_to_users` WHERE user_id = '{$userId}' AND deleted = 0");
 		$paymentMethodsForUser= $query ->fetchAll();
 		return $paymentMethodsForUser;
 	}
@@ -69,4 +69,102 @@ class Expense extends \Core\Model{
 		$expenseSumForLimitCategory= $query ->fetchColumn();
 		return $expenseSumForLimitCategory;
 	}
+	
+	public static function deletePaymentMethod( $categoryId ){
+		$db = static::getDB();
+		
+		$sql = 'UPDATE payment_methods_assigned_to_users SET deleted = 1 WHERE id = :categoryId';
+				
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindValue(':categoryId', $categoryId, PDO::PARAM_INT);
+
+        return $stmt->execute();
+	}
+	
+	public static function editPaymentMethod( $categoryId , $categoryName ,  $userId){
+		$db = static::getDB();
+		$query = $db -> query ("SELECT * FROM payment_methods_assigned_to_users WHERE user_id = '{$userId}' AND name = '{$categoryName}'  AND id != '{$categoryId}' ");
+		$repeatedCategory = $query -> fetchAll();
+		if($repeatedCategory)
+			return false;
+		else{
+			$sql = 'UPDATE payment_methods_assigned_to_users SET name = :categoryName WHERE id = :categoryId';
+				
+			$stmt = $db->prepare($sql);
+
+			$stmt->bindValue(':categoryId', $categoryId, PDO::PARAM_INT);
+			$stmt->bindValue(':categoryName', $categoryName, PDO::PARAM_STR);
+
+			return $stmt->execute();
+		}
+	}
+	
+	public static function addPaymentMethod( $categoryName ,  $userId){
+		$db = static::getDB();
+		$query = $db -> query ("SELECT * FROM payment_methods_assigned_to_users WHERE user_id = '{$userId}' AND name = '{$categoryName}'  AND deleted = 0");
+		$repeatedCategory = $query -> fetchAll();
+		if($repeatedCategory)
+			return false;
+		else{
+			$sql = 'INSERT INTO  payment_methods_assigned_to_users VALUES ( NULL, :userId, :categoryName, false ) ';
+				
+			$stmt = $db->prepare($sql);
+
+			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+			$stmt->bindValue(':categoryName', $categoryName, PDO::PARAM_STR);
+
+			return $stmt->execute();
+		}
+	}
+	
+	public static function deleteExpenseCategory( $categoryId ){
+		$db = static::getDB();
+		
+		$sql = 'UPDATE expenses_category_assigned_to_users SET deleted = 1 WHERE id = :categoryId';
+				
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindValue(':categoryId', $categoryId, PDO::PARAM_INT);
+
+        return $stmt->execute();
+	}
+	
+	public static function editExpenseCategory( $categoryId , $categoryLimit, $categoryName ,  $userId){
+		$db = static::getDB();
+		$query = $db -> query ("SELECT * FROM expenses_category_assigned_to_users  WHERE user_id = '{$userId}' AND name = '{$categoryName}'  AND id != '{$categoryId}' ");
+		$repeatedCategory = $query -> fetchAll();
+		if($repeatedCategory)
+			return false;
+		else{
+			$sql = 'UPDATE expenses_category_assigned_to_users  SET name = :categoryName , category_limit = :categoryLimit WHERE id = :categoryId';
+				
+			$stmt = $db->prepare($sql);
+
+			$stmt->bindValue(':categoryId', $categoryId, PDO::PARAM_INT);
+			$stmt->bindValue(':categoryLimit', $categoryLimit, PDO::PARAM_INT);
+			$stmt->bindValue(':categoryName', $categoryName, PDO::PARAM_STR);
+
+			return $stmt->execute();
+		}
+	}
+	
+	public static function addExpenseCategory( $categoryName ,  $userId){
+		$db = static::getDB();
+		$query = $db -> query ("SELECT * FROM expenses_category_assigned_to_users WHERE user_id = '{$userId}' AND name = '{$categoryName}'  AND deleted = 0");
+		$repeatedCategory = $query -> fetchAll();
+		if($repeatedCategory)
+			return false;
+		else{
+			$sql = 'INSERT INTO  expenses_category_assigned_to_users VALUES ( NULL, :userId, :categoryName, false , 0) ';
+				
+			$stmt = $db->prepare($sql);
+
+			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+			$stmt->bindValue(':categoryName', $categoryName, PDO::PARAM_STR);
+
+			return $stmt->execute();
+		}
+	}
+	
 }

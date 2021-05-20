@@ -1,0 +1,15 @@
+{% for paymentMethod in paymentMethods %}
+					
+	<div class = "row g-0 categoryBlock mb-1">
+	
+		<div class = "col-10 text-left">{{paymentMethod.name}}</div>
+		<div class = "col-2 d-flex justify-content-center align-items-center">
+		
+			<a data-toggle="modal" data-target ="#modalEditPaymentMethod{{paymentMethod.id}}" href ="#modalEditPaymentMethod{{paymentMethod.id}}"><div class = "mr-2" title = "Edytuj" ><i class="icon-edit"></i></div></a>
+			
+			<a data-toggle="modal" data-target ="#modalDeletePaymentMethod{{paymentMethod.id}}" href ="#modalDeletePaymentMethod{{paymentMethod.id}}"><div title = "Usuń" ><i class="icon-trash-empty"></i></div></a>
+		
+		</div>
+
+	</div>
+{% endfor %}

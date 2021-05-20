@@ -41,8 +41,56 @@ class Income extends \Core\Model{
 	
 	public static function getIncomesCategoryForUser($userId){
 		$db = static::getDB();
-		$query = $db -> query("SELECT name FROM `incomes_category_assigned_to_users`  WHERE user_id = '{$userId}' AND deleted = 0");
+		$query = $db -> query("SELECT id, name FROM `incomes_category_assigned_to_users`  WHERE user_id = '{$userId}' AND deleted = 0");
 		$incomesCategoryForUser= $query ->fetchAll();
 		return $incomesCategoryForUser;
+	}
+	
+	public static function deleteIncomeCategory( $categoryId ){
+		$db = static::getDB();
+		
+		$sql = 'UPDATE incomes_category_assigned_to_users SET deleted = 1 WHERE id = :categoryId';
+				
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindValue(':categoryId', $categoryId, PDO::PARAM_INT);
+
+        return $stmt->execute();
+	}
+	
+	public static function editIncomeCategory( $categoryId , $categoryName ,  $userId){
+		$db = static::getDB();
+		$query = $db -> query ("SELECT * FROM incomes_category_assigned_to_users WHERE user_id = '{$userId}' AND name = '{$categoryName}'  AND id != '{$categoryId}' ");
+		$repeatedCategory = $query -> fetchAll();
+		if($repeatedCategory)
+			return false;
+		else{
+			$sql = 'UPDATE incomes_category_assigned_to_users SET name = :categoryName WHERE id = :categoryId';
+				
+			$stmt = $db->prepare($sql);
+
+			$stmt->bindValue(':categoryId', $categoryId, PDO::PARAM_INT);
+			$stmt->bindValue(':categoryName', $categoryName, PDO::PARAM_STR);
+
+			return $stmt->execute();
+		}
+	}
+	
+	public static function addIncomeCategory( $categoryName ,  $userId){
+		$db = static::getDB();
+		$query = $db -> query ("SELECT * FROM incomes_category_assigned_to_users WHERE user_id = '{$userId}' AND name = '{$categoryName}'  AND deleted = 0");
+		$repeatedCategory = $query -> fetchAll();
+		if($repeatedCategory)
+			return false;
+		else{
+			$sql = 'INSERT INTO  incomes_category_assigned_to_users VALUES ( NULL, :userId, :categoryName, false ) ';
+				
+			$stmt = $db->prepare($sql);
+
+			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+			$stmt->bindValue(':categoryName', $categoryName, PDO::PARAM_STR);
+
+			return $stmt->execute();
+		}
 	}
 }

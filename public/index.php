@@ -34,6 +34,7 @@ $router->add('rejestracja', ['controller' => 'Signup', 'action' => 'new']);
 $router->add('wydatki', ['controller' => 'Expenses', 'action' => 'new']);
 $router->add('przychody', ['controller' => 'Incomes', 'action' => 'new']);
 $router->add('bilans', ['controller' => 'Balance', 'action' => 'new']);
+$router->add('ustawienia', ['controller' => 'Settings', 'action' => 'new']);
 $router->add('{controller}/{action}');
 $router->add('password/reset/{token:[\da-f]+}', ['controller' => 'Password', 'action' => 'reset']);
 $router->add('signup/activate/{token:[\da-f]+}', ['controller' => 'Signup', 'action' => 'activate']);
