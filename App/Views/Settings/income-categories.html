@@ -1,0 +1,14 @@
+{% for incomeCategory in incomeCategory %}
+					
+	<div class = "row g-0 categoryBlock mb-1">
+		<div class = "col-10 text-left">{{incomeCategory.name}}</div>
+		<div class = "col-2 d-flex justify-content-center align-items-center">
+		
+			<a data-toggle="modal" data-target ="#modalEditCategory{{incomeCategory.id}}" href ="#modalEditCategory{{incomeCategory.id}}"><div class = "mr-2"><i class="icon-edit"></i></div></a>
+			
+			<a data-toggle="modal" data-target ="#modalDeleteCategory{{incomeCategory.id}}" href ="#modalDeleteCategory{{incomeCategory.id}}"><div class = ""><i class="icon-trash-empty"></i></div></a>
+		
+		</div>
+	</div>
+					
+{% endfor %}

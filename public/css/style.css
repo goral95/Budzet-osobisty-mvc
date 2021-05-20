@@ -283,6 +283,50 @@ tr:nth-child(odd) {
 	color: green;
 }
 
+.nav-pills .myPill .nav-link {
+    background-color: #ffa31a;
+    color: white;
+	border: groove 3px black;
+}
+
+.nav-pills .myPill .nav-link:not(.active) {
+    background-color: #facb85;
+	border: solid 1px gray;
+	color: gray;
+}
+
+.categoryBlock{
+	padding: 5px 10px;
+	border: solid 1px gray;
+	border-radius: 6px;
+	background-color: #ffa31a;
+	color: white;
+}
+
+.categoryBlock p{
+	color: #666666;
+	font-size: 12px;
+	margin-bottom: 0px;
+}
+
+.modal{
+	color: black !important;
+}
+
+.modal input{
+	width: 400px;
+	height: 40px;
+	color: #333333;
+	font-size: 18px;
+	box-sizing: border-box;
+	border: 2px solid #ffa31a;
+	border-radius: .25rem;
+}
+
+.modal label{
+	color: black;
+	margin-bottom: 3px;
+}
 
 
 

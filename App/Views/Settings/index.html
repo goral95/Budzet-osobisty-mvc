@@ -1,0 +1,560 @@
+{% extends "base_after_login.html" %}
+
+{% block title %}Ustawienia{% endblock %}
+
+
+{% block js %}
+
+	<script type="text/javascript">
+		
+		
+		$(document).ready(function() {
+			$('.changeTab').click(function(){
+				$('.allerts').html('');
+			});
+			
+			$('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+				localStorage.setItem('activeTab', $(e.target).attr('href'));
+			});
+			var activeTab = localStorage.getItem('activeTab');
+			if(activeTab){
+				$('#myTab a[href="' + activeTab + '"]').tab('show');
+			}
+		
+			$(".clearMessage").click(function() {
+			   $(".messageEditIncome").html('');
+			   $(".messageEditPaymentMethod").html('');
+			   $(".messageEditExpense").html('');
+			});
+			
+			$("#submitFormAddIncomeCategory").click(function() {
+			   $("#formAddIncomeCategory").submit();
+			});
+			
+			$("#submitFormAddExpenseCategory").click(function() {
+			   $("#formAddExpenseCategory").submit();
+			});
+		   
+		   $("#submitFormAddPaymentMethod").click(function() {
+			   $("#formAddPaymentMethod").submit();
+			});
+		   			
+			{% for incomeCategory in incomeCategory %}
+			
+		   $("#submitFormDeleteIncome{{incomeCategory.id}}").click(function() {
+			   $("#formDeleteIncome{{incomeCategory.id}}").submit();
+		   });
+		   
+		   $("#submitFormEditIncome{{incomeCategory.id}}").click(function() {
+			   $("#formEditIncome{{incomeCategory.id}}").submit();
+		   });
+		  
+		   $('#formDeleteIncome{{incomeCategory.id}}').on( 'submit', function(e) {
+				e.preventDefault();
+				var form = $(this);
+				$.ajax({
+					url: form.attr('action'),
+					data: form.serialize(),
+					method: 'POST' ,
+					success: function (data) {
+						$('.messageDeleteIncome').html(data);
+						$('.allerts').html('');
+						$('.incomeCategories').load('/settings/refresh-income-categories');
+						$('#modalDeleteCategory{{incomeCategory.id}}').modal('hide');
+					}					
+				});
+			});
+			
+			$('#formEditIncome{{incomeCategory.id}}').on( 'submit', function(e) {
+				e.preventDefault();
+				var form = $(this);
+				$.ajax({
+					url: form.attr('action'),
+					data: form.serialize(),
+					method: 'POST' ,
+					success: function (data) {
+						$('.messageEditIncome').html(data);
+						$('.incomeCategories').load('/settings/refresh-income-categories');
+					}					
+				});
+			});
+			
+			{% endfor %}
+			
+			{% for paymentMethod in paymentMethods %}
+			
+		   $("#submitFormDeletePaymentMethod{{paymentMethod.id}}").click(function() {
+			   $("#formDeletePaymentMethod{{paymentMethod.id}}").submit();
+		   });
+		   
+		   $("#submitFormEditPaymentMethod{{paymentMethod.id}}").click(function() {
+			   $("#formEditPaymentMethod{{paymentMethod.id}}").submit();
+		   });
+		  
+		   $('#formDeletePaymentMethod{{paymentMethod.id}}').on( 'submit', function(e) {
+				e.preventDefault();
+				var form = $(this);
+				$.ajax({
+					url: form.attr('action'),
+					data: form.serialize(),
+					method: 'POST' ,
+					success: function (data) {
+						$('.messageDeletePaymentMethod').html(data);
+						$('.allerts').html('');
+						$('.paymentMethods').load('/settings/refresh-payment-methods');
+						$('#modalDeletePaymentMethod{{paymentMethod.id}}').modal('hide');
+					}					
+				});
+			});
+			
+			$('#formEditPaymentMethod{{paymentMethod.id}}').on( 'submit', function(e) {
+				e.preventDefault();
+				var form = $(this);
+				$.ajax({
+					url: form.attr('action'),
+					data: form.serialize(),
+					method: 'POST' ,
+					success: function (data) {
+						$('.messageEditPaymentMethod').html(data);
+						$('.paymentMethods').load('/settings/refresh-payment-methods');
+					}					
+				});
+			});
+			
+			{% endfor %}
+			
+			{% for expenseCategory in expenseCategory %}
+			
+		   $("#submitFormDeleteExpense{{expenseCategory.id}}").click(function() {
+			   $("#formDeleteExpense{{expenseCategory.id}}").submit();
+		   });
+		   
+		   $("#submitFormEditExpense{{expenseCategory.id}}").click(function() {
+			   $("#formEditExpense{{expenseCategory.id}}").submit();
+		   });
+		  
+		   $('#formDeleteExpense{{expenseCategory.id}}').on( 'submit', function(e) {
+				e.preventDefault();
+				var form = $(this);
+				$.ajax({
+					url: form.attr('action'),
+					data: form.serialize(),
+					method: 'POST' ,
+					success: function (data) {
+						$('.messageDeleteExpense').html(data);
+						$('.allerts').html('');
+						$('.expenseCategories').load('/settings/refresh-expense-categories');
+						$('#modalDeleteExpenseCategory{{expenseCategory.id}}').modal('hide');
+					}					
+				});
+			});
+			
+			$('#formEditExpense{{expenseCategory.id}}').on( 'submit', function(e) {
+				e.preventDefault();
+				var form = $(this);
+				$.ajax({
+					url: form.attr('action'),
+					data: form.serialize(),
+					method: 'POST' ,
+					success: function (data) {
+						$('.messageEditExpense').html(data);
+						$('.expenseCategories').load('/settings/refresh-expense-categories');
+					}					
+				});
+			});
+			
+			{% endfor %}
+		});
+	</script>
+
+{% endblock %}
+
+{% block body %}
+
+   <header><h2 class = "h3 mt-2 ">USTAWIENIA</h2></header>
+									
+		<ul class="nav nav-pills" id = "myTab">
+		  <li class="nav-item myPill">
+			<a class="nav-link active changeTab" href="#1przycisk" role="tab" data-toggle="tab">Kategorie Przychodów</a>
+		  </li>
+		  <li class="nav-item myPill">
+			<a class="nav-link changeTab" href="#2przycisk" role="tab" data-toggle="tab" id = "secondButton">Kategorie Wydatków</a>
+		  </li>
+		  <li class="nav-item myPill">
+			<a class="nav-link changeTab" href="#3przycisk" role="tab" data-toggle="tab">Metody Płatności</a>
+		  </li>
+		  <li class="nav-item myPill">
+			<a class="nav-link changeTab" href="#4przycisk" role="tab" data-toggle="tab" >Profil</a>
+		  </li>
+		</ul>
+		
+		<div class="tab-content">
+		  <div class="tab-pane active" id="1przycisk">
+		  
+				<div class = "incomeCategories">
+				
+					{% for incomeCategory in incomeCategory %}
+					
+						<div class = "row g-0 categoryBlock mb-1">
+							<div class = "col-10 text-left">{{incomeCategory.name}}</div>
+							<div class = "col-2 d-flex justify-content-center align-items-center">
+							
+								<a data-toggle="modal" data-target ="#modalEditCategory{{incomeCategory.id}}" href ="#modalEditCategory{{incomeCategory.id}}"><div class = "mr-2" title = "Edytuj" ><i class="icon-edit"></i></div></a>
+								
+								<a data-toggle="modal" data-target ="#modalDeleteCategory{{incomeCategory.id}}" href ="#modalDeleteCategory{{incomeCategory.id}}"><div title = "Usuń" ><i class="icon-trash-empty"></i></div></a>
+							
+							</div>
+						</div>
+					
+					{% endfor %}
+					
+				</div>
+				
+				<button type="button" class="btn myButtons mt-3" data-toggle="modal" data-target ="#modalAddIncomeCategory">Dodaj kategorie<i class="icon-plus"></i></button>
+				
+				<div class = "messageDeleteIncome mt-3"></div>
+				
+				
+				{% for message in flash_messages %}
+					<div class=" my-alert-{{ message.type }} mb-3 allerts">
+						{{ message.body }}
+					</div>
+				{% endfor %}
+				
+		 </div>
+			  <div class="tab-pane" id="2przycisk">
+			  
+					<div class = "expenseCategories">
+				
+					{% for expenseCategory in expenseCategory %}
+					
+						<div class = "row g-0 categoryBlock mb-1">
+							<div class = "col-10 text-left">{{expenseCategory.name}}<p>Limit: {{expenseCategory.category_limit}} zł</p></div>
+							<div class = "col-2 d-flex justify-content-center align-items-center">
+							
+								<a data-toggle="modal" data-target ="#modalEditExpenseCategory{{expenseCategory.id}}" href ="#modalEditExpenseCategory{{expenseCategory.id}}"><div class = "mr-2" title = "Edytuj" ><i class="icon-edit"></i></div></a>
+								
+								<a data-toggle="modal" data-target ="#modalDeleteExpenseCategory{{expenseCategory.id}}" href ="#modalDeleteExpenseCategory{{expenseCategory.id}}"><div title = "Usuń" ><i class="icon-trash-empty"></i></div></a>
+							
+							</div>
+						</div>
+					
+					{% endfor %}
+					
+					</div>
+					
+					<button type="button" class="btn myButtons mt-3" data-toggle="modal" data-target ="#modalAddExpenseCategory">Dodaj kategorie<i class="icon-plus"></i></button>
+					
+					<div class = "messageDeleteExpense mt-3"></div>
+					
+					
+					{% for message in flash_messages %}
+						<div class=" my-alert-{{ message.type }} mb-3 allerts">
+							{{ message.body }}
+						</div>
+					{% endfor %}
+			  
+			  </div>
+			  <div class="tab-pane" id="3przycisk">
+			  
+					<div class = "paymentMethods">
+				
+					{% for paymentMethod in paymentMethods %}
+					
+						<div class = "row g-0 categoryBlock mb-1">
+							<div class = "col-10 text-left">{{paymentMethod.name}}</div>
+							<div class = "col-2 d-flex justify-content-center align-items-center">
+							
+								<a data-toggle="modal" data-target ="#modalEditPaymentMethod{{paymentMethod.id}}" href ="#modalEditPaymentMethod{{paymentMethod.id}}"><div class = "mr-2" title = "Edytuj" ><i class="icon-edit"></i></div></a>
+								
+								<a data-toggle="modal" data-target ="#modalDeletePaymentMethod{{paymentMethod.id}}" href ="#modalDeletePaymentMethod{{paymentMethod.id}}"><div title = "Usuń" ><i class="icon-trash-empty"></i></div></a>
+							
+							</div>
+						</div>
+					
+					{% endfor %}
+					
+					</div>
+					
+					<button type="button" class="btn myButtons mt-3" data-toggle="modal" data-target ="#modalAddPaymentMethod">Dodaj metode<i class="icon-plus"></i></button>
+					
+					<div class = "messageDeletePaymentMethod mt-3"></div>
+					
+					
+					{% for message in flash_messages %}
+						<div class=" my-alert-{{ message.type }} mb-3 allerts">
+							{{ message.body }}
+						</div>
+					{% endfor %}
+			  
+			  </div>
+			  <div class="tab-pane" id="4przycisk">Zawartość czwartego przycisku</div>
+		</div>
+		
+		
+		<!-- Modal -->
+		<div  class = "incomeModals">
+		{% for incomeCategory in incomeCategory %}
+		
+			<div class="modal fade" id="modalEditCategory{{incomeCategory.id}}" tabindex="-1" role="dialog" aria-labelledby="modalEditCategory{{incomeCategory.id}}" aria-hidden="true">
+			  <div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+				  <div class="modal-header justify-content-center">
+					<h5 class="modal-title" id="modalTitle">Edycja kategorii</h5>
+				  </div>
+				  <div class="modal-body d-flex justify-content-center">
+					<form method = "post" action = "/settings/edit-income-category" id = "formEditIncome{{incomeCategory.id}}">
+						
+						<div class="form-group">
+							<input type="hidden" name="categoryId" value = "{{incomeCategory.id}}">
+						 </div>
+						 
+						 <div class="form-group">
+							<label for="categoryName">Nazwa:</label>
+							<input type="text" class="form-control" name="categoryName" value = "{{incomeCategory.name}}" required>
+						 </div>
+						 
+					</form>
+					
+				  </div>
+				  
+				  <div class = "messageEditIncome mb-2 text-center"></div>
+				  
+				  <div class="modal-footer justify-content-center">
+					<button type="button" class="btn myButtons clearMessage" data-dismiss="modal">Wyjdź</button>
+					<button type="submit" class="btn myButtons" id = "submitFormEditIncome{{incomeCategory.id}}">Zapisz</button>
+				  </div>
+				</div>
+			  </div>
+			</div>
+			
+			<div class="modal fade" id="modalDeleteCategory{{incomeCategory.id}}" tabindex="-1" role="dialog" aria-labelledby="modalDeleteCategory{{incomeCategory.id}}" aria-hidden="true">
+			  <div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+				  <div class="modal-header justify-content-center">
+					<h5 class="modal-title" id="modalTitle">Usuwanie kategorii</h5>
+				  </div>
+				  <div class="modal-body">
+					Czy na pewno chcesz usunąć kategorie?
+					<form method = "post" action = "/settings/delete-income-category" id = "formDeleteIncome{{incomeCategory.id}}">
+		
+						<div class="form-group">
+							<input type="hidden" name="categoryId" value = "{{incomeCategory.id}}">
+						 </div>
+						 
+					</form>
+				  </div>
+				  <div class="modal-footer justify-content-center">
+					<button type="button" class="btn myButtons" data-dismiss="modal">Nie</button>
+					<button type="submit" class="btn myButtons" id = "submitFormDeleteIncome{{incomeCategory.id}}" >Tak</button>
+				  </div>
+				</div>
+			  </div>
+			</div>
+		
+		{% endfor %}
+		</div>
+		
+		<div class="modal fade" id="modalAddIncomeCategory" tabindex="-1" role="dialog" aria-labelledby="modalAddIncomeCategory" aria-hidden="true">
+		  <div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+			  <div class="modal-header justify-content-center">
+				<h5 class="modal-title" id="modalTitle">Dodawanie kategorii</h5>
+			  </div>
+			  <div class="modal-body d-flex justify-content-center">
+				<form method = "post" action = "/settings/add-income-category" id = "formAddIncomeCategory" >
+					 
+					 <div class="form-group">
+						<label for="categoryName">Nazwa:</label>
+						<input type="text" class="form-control" name="categoryName" placeholder = "Nazwa kategorii" required>
+					 </div>
+					
+				</form>
+			  </div>
+			  <div class="modal-footer justify-content-center">
+				<button type="button" class="btn myButtons" data-dismiss="modal">Wyjdź</button>
+				<button type="submit" class="btn myButtons"  id = "submitFormAddIncomeCategory" >Zapisz</button>
+			  </div>
+			</div>
+		  </div>
+		</div>
+				
+		<div  class = "paymentMethodsModals">
+		{% for paymentMethod in paymentMethods %}
+		
+			<div class="modal fade" id="modalEditPaymentMethod{{paymentMethod.id}}" tabindex="-1" role="dialog" aria-labelledby="modalEditPaymentMethod{{paymentMethod.id}}" aria-hidden="true">
+			  <div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+				  <div class="modal-header justify-content-center">
+					<h5 class="modal-title" id="modalTitle">Edycja metody</h5>
+				  </div>
+				  <div class="modal-body d-flex justify-content-center">
+					<form method = "post" action = "/settings/edit-payment-method" id = "formEditPaymentMethod{{paymentMethod.id}}">
+						
+						<div class="form-group">
+							<input type="hidden" name="categoryId" value = "{{paymentMethod.id}}">
+						 </div>
+						 
+						 <div class="form-group">
+							<label for="categoryName">Nazwa:</label>
+							<input type="text" class="form-control" name="categoryName" value = "{{paymentMethod.name}}" required>
+						 </div>
+						 
+					</form>
+					
+				  </div>
+				  
+				  <div class = "messageEditPaymentMethod mb-2 text-center"></div>
+				  
+				  <div class="modal-footer justify-content-center">
+					<button type="button" class="btn myButtons clearMessage" data-dismiss="modal">Wyjdź</button>
+					<button type="submit" class="btn myButtons" id = "submitFormEditPaymentMethod{{paymentMethod.id}}">Zapisz</button>
+				  </div>
+				</div>
+			  </div>
+			</div>
+			
+			<div class="modal fade" id="modalDeletePaymentMethod{{paymentMethod.id}}" tabindex="-1" role="dialog" aria-labelledby="modalDeletePaymentMethod{{paymentMethod.id}}" aria-hidden="true">
+			  <div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+				  <div class="modal-header justify-content-center">
+					<h5 class="modal-title" id="modalTitle">Usuwanie metody</h5>
+				  </div>
+				  <div class="modal-body">
+					Czy na pewno chcesz usunąć metode płątności?
+					<form method = "post" action = "/settings/delete-payment-method" id = "formDeletePaymentMethod{{paymentMethod.id}}">
+		
+						<div class="form-group">
+							<input type="hidden" name="categoryId" value = "{{paymentMethod.id}}">
+						 </div>
+						 
+					</form>
+				  </div>
+				  <div class="modal-footer justify-content-center">
+					<button type="button" class="btn myButtons" data-dismiss="modal">Nie</button>
+					<button type="submit" class="btn myButtons" id = "submitFormDeletePaymentMethod{{paymentMethod.id}}" >Tak</button>
+				  </div>
+				</div>
+			  </div>
+			</div>
+		
+		{% endfor %}
+		</div>
+		
+		<div class="modal fade" id="modalAddPaymentMethod" tabindex="-1" role="dialog" aria-labelledby="modalAddPaymentMethod" aria-hidden="true">
+		  <div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+			  <div class="modal-header justify-content-center">
+				<h5 class="modal-title" id="modalTitle">Dodawanie metody</h5>
+			  </div>
+			  <div class="modal-body d-flex justify-content-center">
+				<form method = "post" action = "/settings/add-payment-method" id = "formAddPaymentMethod" >
+					 
+					 <div class="form-group">
+						<label for="categoryName">Nazwa:</label>
+						<input type="text" class="form-control" name="categoryName" placeholder = "Nazwa metody" required>
+					 </div>
+					
+				</form>
+			  </div>
+			  <div class="modal-footer justify-content-center">
+				<button type="button" class="btn myButtons" data-dismiss="modal">Wyjdź</button>
+				<button type="submit" class="btn myButtons"  id = "submitFormAddPaymentMethod" >Zapisz</button>
+			  </div>
+			</div>
+		  </div>
+		</div>
+		
+		<div  class = "expensesModals">
+		{% for expenseCategory in expenseCategory %}
+		
+			<div class="modal fade" id="modalEditExpenseCategory{{expenseCategory.id}}" tabindex="-1" role="dialog" aria-labelledby="modalEditExpenseCategory{{expenseCategory.id}}" aria-hidden="true">
+			  <div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+				  <div class="modal-header justify-content-center">
+					<h5 class="modal-title" id="modalTitle">Edycja kategorii</h5>
+				  </div>
+				  <div class="modal-body d-flex justify-content-center">
+					<form method = "post" action = "/settings/edit-expense-category" id = "formEditExpense{{expenseCategory.id}}">
+						
+						<div class="form-group">
+							<input type="hidden" name="categoryId" value = "{{expenseCategory.id}}">
+						 </div>
+						 
+						 <div class="form-group">
+							<label for="categoryName">Nazwa:</label>
+							<input type="text" class="form-control" name="categoryName" value = "{{expenseCategory.name}}" required>
+						 </div>
+						 
+						 <div class="form-group">
+							<label for="categoryLimit">Limit:</label>
+							<input type="number" class="form-control" name="categoryLimit" value = "{{expenseCategory.category_limit}}" min = "0" required>
+						 </div>
+						 
+					</form>
+					
+				  </div>
+				  
+				  <div class = "messageEditExpense mb-2 text-center"></div>
+				  
+				  <div class="modal-footer justify-content-center">
+					<button type="button" class="btn myButtons clearMessage" data-dismiss="modal">Wyjdź</button>
+					<button type="submit" class="btn myButtons" id = "submitFormEditExpense{{expenseCategory.id}}">Zapisz</button>
+				  </div>
+				</div>
+			  </div>
+			</div>
+			
+			<div class="modal fade" id="modalDeleteExpenseCategory{{expenseCategory.id}}" tabindex="-1" role="dialog" aria-labelledby="modalDeleteExpenseCategory{{expenseCategory.id}}" aria-hidden="true">
+			  <div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+				  <div class="modal-header justify-content-center">
+					<h5 class="modal-title" id="modalTitle">Usuwanie kategorii</h5>
+				  </div>
+				  <div class="modal-body">
+					Czy na pewno chcesz usunąć kategorie?
+					<form method = "post" action = "/settings/delete-expense-category" id = "formDeleteExpense{{expenseCategory.id}}">
+		
+						<div class="form-group">
+							<input type="hidden" name="categoryId" value = "{{expenseCategory.id}}">
+						 </div>
+						 
+					</form>
+				  </div>
+				  <div class="modal-footer justify-content-center">
+					<button type="button" class="btn myButtons" data-dismiss="modal">Nie</button>
+					<button type="submit" class="btn myButtons" id = "submitFormDeleteExpense{{expenseCategory.id}}" >Tak</button>
+				  </div>
+				</div>
+			  </div>
+			</div>
+		
+		{% endfor %}
+		</div>
+		
+		<div class="modal fade" id="modalAddExpenseCategory" tabindex="-1" role="dialog" aria-labelledby="modalAddExpenseCategory" aria-hidden="true">
+		  <div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+			  <div class="modal-header justify-content-center">
+				<h5 class="modal-title" id="modalTitle">Dodawanie kategorii</h5>
+			  </div>
+			  <div class="modal-body d-flex justify-content-center">
+				<form method = "post" action = "/settings/add-expense-category" id = "formAddExpenseCategory" >
+					 
+					 <div class="form-group">
+						<label for="categoryName">Nazwa:</label>
+						<input type="text" class="form-control" name="categoryName" placeholder = "Nazwa kategorii" required>
+					 </div>
+					 
+				</form>
+			  </div>
+			  <div class="modal-footer justify-content-center">
+				<button type="button" class="btn myButtons" data-dismiss="modal">Wyjdź</button>
+				<button type="submit" class="btn myButtons"  id = "submitFormAddExpenseCategory" >Zapisz</button>
+			  </div>
+			</div>
+		  </div>
+		</div>
+		
+
+{% endblock %}

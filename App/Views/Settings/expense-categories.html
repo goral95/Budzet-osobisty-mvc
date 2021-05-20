@@ -1,0 +1,14 @@
+{% for expenseCategory in expenseCategory %}
+					
+	<div class = "row g-0 categoryBlock mb-1">
+		<div class = "col-10 text-left">{{expenseCategory.name}}<p>Limit: {{expenseCategory.category_limit}} zł</p></div>
+		<div class = "col-2 d-flex justify-content-center align-items-center">
+		
+			<a data-toggle="modal" data-target ="#modalEditExpenseCategory{{expenseCategory.id}}" href ="#modalEditExpenseCategory{{expenseCategory.id}}"><div class = "mr-2" title = "Edytuj" ><i class="icon-edit"></i></div></a>
+			
+			<a data-toggle="modal" data-target ="#modalDeleteExpenseCategory{{expenseCategory.id}}" href ="#modalDeleteExpenseCategory{{expenseCategory.id}}"><div title = "Usuń" ><i class="icon-trash-empty"></i></div></a>
+		
+		</div>
+	</div>
+
+{% endfor %}
