@@ -5,7 +5,10 @@ namespace App\Controllers;
 use \Core\View;
 use \App\Models\Income;
 use \App\Models\Expense;
+use \App\Models\User;
 use \App\Flash;
+use \App\Auth;
+use \App\Login;
 
 /**
  * Home controller
@@ -26,6 +29,7 @@ class Settings extends Authenticated
 		$paymentMethodsForUser = Expense::getPaymentMethodsForUser($this->user->id);
         View::renderTemplate('Settings/index.html', [
 		'chosen' => 'settings' ,
+		'user' => $this->user ,
 		'incomeCategory' => $incomesCategoryForUser ,
 		'expenseCategory' => $expensesCategoryForUser ,
 		'paymentMethods' => $paymentMethodsForUser
@@ -150,5 +154,37 @@ class Settings extends Authenticated
             $this -> redirect ('/ustawienia');
 		}
 		
+	}
+	
+	public function editUserNameAction(){
+		
+		if(User::editUserName( $_POST['userName'], $this->user->id))
+			echo '<span style = "color:green;">Nazwa została zapisana </span>' ;
+		else
+			echo '<span style = "color:red;">Wystąpił błąd, spróbuj ponownie </span>';
+	}
+	
+	public function resetAccountAction(){
+		Income::deleteUserIncomeThings($this->user->id);
+		Expense::deleteUserExpenseThings($this->user->id);
+		User::setDefaultCategories($this->user->id);
+		Flash::addMessage('Konto zostało zresetowane');
+        $this -> redirect ('/ustawienia');
+	}
+	
+	public function deleteAccountAction(){
+		Income::deleteUserIncomeThings($this->user->id);
+		Expense::deleteUserExpenseThings($this->user->id);
+		User::deleteUser($this->user->id);
+		Auth::logout();
+		$this -> redirect('/login/show-delete-message');
+	}
+	
+	public function changePasswordAction(){
+		if($this->user -> resetPassword($_POST['password'])){
+			echo '<span style = "color:green;">Hasło zmienione pomyślnie </span>' ; 
+		}else{
+			echo '<span style = "color:red;">Zły format hasła, spróbuj ponownie </span>';
+		}
 	}
 }

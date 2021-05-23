@@ -93,4 +93,10 @@ class Income extends \Core\Model{
 			return $stmt->execute();
 		}
 	}
+	
+	public static function deleteUserIncomeThings($userId){
+		$db = static::getDB();
+		$query = $db -> query ("DELETE FROM incomes WHERE user_id = '{$userId}' ");
+		$query = $db -> query ("DELETE FROM incomes_category_assigned_to_users WHERE user_id = '{$userId}' ");
+	}
 }

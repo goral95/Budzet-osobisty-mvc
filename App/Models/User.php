@@ -406,7 +406,7 @@ class User extends \Core\Model
 		$defaultExpenseCategoryQuery = $db -> query('SELECT * FROM expenses_category_default');
 		$defaultExpenseCategory = $defaultExpenseCategoryQuery -> fetchAll();
 		foreach($defaultExpenseCategory as $expenseCategory){
-			$writeDefaultExpenseCategoryToUserQuery = $db->prepare("INSERT INTO expenses_category_assigned_to_users VALUES (NULL, :newUserId , :expenseCategory)");
+			$writeDefaultExpenseCategoryToUserQuery = $db->prepare("INSERT INTO expenses_category_assigned_to_users VALUES (NULL, :newUserId , :expenseCategory, false , 0)");
 			$writeDefaultExpenseCategoryToUserQuery->bindValue(':newUserId', $newUserId, PDO::PARAM_INT);
 			$writeDefaultExpenseCategoryToUserQuery->bindValue(':expenseCategory', $expenseCategory['name'], PDO::PARAM_STR);
 			$writeDefaultExpenseCategoryToUserQuery->execute();
@@ -414,7 +414,7 @@ class User extends \Core\Model
 		$defaultIncomeCategoryQuery = $db -> query('SELECT * FROM incomes_category_default');
 		$defaultIncomeCategory = $defaultIncomeCategoryQuery -> fetchAll();
 		foreach($defaultIncomeCategory as $incomeCategory){
-			$writeDefaultIncomeCategoryToUserQuery = $db->prepare("INSERT INTO incomes_category_assigned_to_users VALUES (NULL, :newUserId , :incomeCategory)");
+			$writeDefaultIncomeCategoryToUserQuery = $db->prepare("INSERT INTO incomes_category_assigned_to_users VALUES (NULL, :newUserId , :incomeCategory, false)");
 			$writeDefaultIncomeCategoryToUserQuery->bindValue(':newUserId', $newUserId, PDO::PARAM_INT);
 			$writeDefaultIncomeCategoryToUserQuery->bindValue(':incomeCategory', $incomeCategory['name'], PDO::PARAM_STR);
 			$writeDefaultIncomeCategoryToUserQuery->execute();
@@ -422,60 +422,30 @@ class User extends \Core\Model
 		$defaultPaymentMethodsQuery = $db -> query('SELECT * FROM payment_methods_default');
 		$defaultPaymentMethods = $defaultPaymentMethodsQuery -> fetchAll();
 		foreach($defaultPaymentMethods as $paymentMethod){
-			$writeDefaultPaymentMethodsToUserQuery = $db->prepare("INSERT INTO payment_methods_assigned_to_users VALUES (NULL, :newUserId , :paymentMethod)");
+			$writeDefaultPaymentMethodsToUserQuery = $db->prepare("INSERT INTO payment_methods_assigned_to_users VALUES (NULL, :newUserId , :paymentMethod, false)");
 			$writeDefaultPaymentMethodsToUserQuery->bindValue(':newUserId', $newUserId, PDO::PARAM_INT);
 			$writeDefaultPaymentMethodsToUserQuery->bindValue(':paymentMethod', $paymentMethod['name'], PDO::PARAM_STR);
 			$writeDefaultPaymentMethodsToUserQuery->execute();
 		}
 	}
-    /**
-     * Update the user's profile
-     *
-     * @param array $data Data from the edit profile form
-     *
-     * @return boolean  True if the data was updated, false otherwise
-     */
-    public function updateProfile($data)
-    {
-        $this->name = $data['name'];
-        $this->email = $data['email'];
+    
+	public static function editUserName( $userName ,  $userId){
+		$db = static::getDB();
+		
+		$sql = 'UPDATE users SET name = :userName WHERE id = :userId';
+			
+		$stmt = $db->prepare($sql);
 
-        // Only validate and update the password if a value provided
-        if ($data['password'] != '') {
-            $this->password = $data['password'];
-        }
+		$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+		$stmt->bindValue(':userName', $userName, PDO::PARAM_STR);
 
-        $this->validate();
-
-        if (empty($this->errors)) {
-
-            $sql = 'UPDATE users
-                    SET name = :name,
-                        email = :email';
-
-            // Add password if it's set
-            if (isset($this->password)) {
-                $sql .= ', password_hash = :password_hash';
-            }
-
-            $sql .= "\nWHERE id = :id";
-
-            $db = static::getDB();
-            $stmt = $db->prepare($sql);
-
-            $stmt->bindValue(':name', $this->name, PDO::PARAM_STR);
-            $stmt->bindValue(':email', $this->email, PDO::PARAM_STR);
-            $stmt->bindValue(':id', $this->id, PDO::PARAM_INT);
-
-            // Add password if it's set
-            if (isset($this->password)) {
-                $password_hash = password_hash($this->password, PASSWORD_DEFAULT);
-                $stmt->bindValue(':password_hash', $password_hash, PDO::PARAM_STR);
-            }
-
-            return $stmt->execute();
-        }
-
-        return false;
-    }
+		return $stmt->execute();
+		
+	}
+	
+	public static function deleteUser($userId){
+		$db = static::getDB();
+		$query = $db -> query ("DELETE FROM remembered_logins WHERE user_id= '{$userId}' ");
+		$query = $db -> query ("DELETE FROM users WHERE id= '{$userId}' ");
+	}
 }
