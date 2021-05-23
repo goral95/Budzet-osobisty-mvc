@@ -4,7 +4,11 @@
 
 
 {% block js %}
-
+	
+	<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/jquery.validate.min.js"></script>
+	<script src = "/js/messages_pl.js"></script>
+	<script src="/js/app.js"></script>
+	
 	<script type="text/javascript">
 		
 		
@@ -25,6 +29,16 @@
 			   $(".messageEditIncome").html('');
 			   $(".messageEditPaymentMethod").html('');
 			   $(".messageEditExpense").html('');
+			   $(".messageEditUserName").html('');
+			   $(".messageChangePassword").html('');
+			});
+			
+			$("#submitFormEditUserName").click(function() {
+			   $("#formEditrUserName").submit();
+			});
+			
+			$("#submitFormChangePassword").click(function() {
+			   $("#formChangePassword").submit();
 			});
 			
 			$("#submitFormAddIncomeCategory").click(function() {
@@ -37,6 +51,59 @@
 		   
 		   $("#submitFormAddPaymentMethod").click(function() {
 			   $("#formAddPaymentMethod").submit();
+			});
+			
+			$('#formEditrUserName').on( 'submit', function(e) {
+				e.preventDefault();
+				var form = $(this);
+				var newName = $('input[name = "userName"]').val();
+				if(newName){
+				$.ajax({
+					url: form.attr('action'),
+					data: form.serialize(),
+					method: 'POST' ,
+					success: function (data) {
+						$('.messageEditUserName').html(data);
+						$('.userNameBlock').html(newName);
+					}					
+				});
+				}else{
+					$('.messageEditUserName').html('<span style = "color:red;">Nazwa nie może być pusta</span>');
+				}
+			});
+			
+			$('#formChangePassword').validate({
+                rules: {
+                    password: {
+                        required: true,
+                        minlength: 6,
+						maxlength: 20,
+                        validPassword: true
+                    }
+                },
+				errorElement : 'div' ,
+				errorClass: 'my-alert-warning', 
+				errorPlacement: function(error, element) {
+				  var placement = $(element).data('error');
+				  if (placement) {
+					$(placement).append(error);
+				  } else {
+					error.insertAfter(element);
+				  }
+				}
+            });
+			
+			$('#formChangePassword').on( 'submit', function(e) {
+				e.preventDefault();
+				var form = $(this);
+				$.ajax({
+					url: form.attr('action'),
+					data: form.serialize(),
+					method: 'POST' ,
+					success: function (data) {
+						$('.messageChangePassword').html(data);
+					}					
+				});
 			});
 		   			
 			{% for incomeCategory in incomeCategory %}
@@ -178,7 +245,7 @@
 			<a class="nav-link active changeTab" href="#1przycisk" role="tab" data-toggle="tab">Kategorie Przychodów</a>
 		  </li>
 		  <li class="nav-item myPill">
-			<a class="nav-link changeTab" href="#2przycisk" role="tab" data-toggle="tab" id = "secondButton">Kategorie Wydatków</a>
+			<a class="nav-link changeTab" href="#2przycisk" role="tab" data-toggle="tab" >Kategorie Wydatków</a>
 		  </li>
 		  <li class="nav-item myPill">
 			<a class="nav-link changeTab" href="#3przycisk" role="tab" data-toggle="tab">Metody Płatności</a>
@@ -288,11 +355,139 @@
 					{% endfor %}
 			  
 			  </div>
-			  <div class="tab-pane" id="4przycisk">Zawartość czwartego przycisku</div>
+			  <div class="tab-pane" id="4przycisk">
+			  
+				<div class = "row g-0 categoryBlock mb-1">
+					<div class = "col-12 text-left">Email: <span style = "color:#666666;">{{user.email}}</span></div>
+				</div>
+				
+				<div class = "row g-0 categoryBlock mb-1">
+					<div class = "col-10 text-left">Nazwa: <span class = "userNameBlock" style = "color:#666666;">{{user.name}}</span></div>
+					<div class = "col-2 d-flex justify-content-center align-items-center">
+					
+						<a data-toggle="modal" data-target ="#modalEditUserName" href ="#modalEditUserName"><div class = "mr-2" title = "Edytuj" ><i class="icon-edit"></i></div></a>
+					
+					</div>
+				</div>
+			  
+			  <div class = "row justify-content-center">
+					
+						<button type="button" class="btn myButtons mx-3" data-toggle="modal" data-target ="#modalChangePassword" href ="#modalChangePassword">Zmień hasło</button>
+					
+						<button type="button" class="btn myButtons mx-3" data-toggle="modal" data-target ="#modalResetAccount" href ="#modalResetAccount">Reset konta</button>
+					
+						<button type="button" class="btn myButtons mx-3" data-toggle="modal" data-target ="#modalDeleteAccount" href ="#modalDeleteAccount">Usuń konto</button>
+					
+				</div>
+			  
+				{% for message in flash_messages %}
+					<div class=" my-alert-{{ message.type }} mb-3 allerts">
+						{{ message.body }}
+					</div>
+				{% endfor %}
+			  
+			  </div>
 		</div>
 		
 		
 		<!-- Modal -->
+		
+		<div class="modal fade" id="modalEditUserName" tabindex="-1" role="dialog" aria-labelledby="modalEditUserName" aria-hidden="true">
+			  <div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+				  <div class="modal-header justify-content-center">
+					<h5 class="modal-title" id="modalTitle">Zmiana nazwy</h5>
+				  </div>
+				  <div class="modal-body d-flex justify-content-center">
+					<form method = "post" action = "/settings/edit-user-name" id = "formEditrUserName">
+						 
+						 <div class="form-group">
+							<label for="userName">Nazwa:</label>
+							<input type="text" class="form-control" name="userName" value = "{{user.name}}" required>
+						 </div>
+						 
+					</form>
+					
+				  </div>
+				  
+				  <div class = "messageEditUserName mb-2 text-center"></div>
+				  
+				  <div class="modal-footer justify-content-center">
+					<button type="button" class="btn myButtons clearMessage" data-dismiss="modal">Wyjdź</button>
+					<button type="submit" class="btn myButtons" id = "submitFormEditUserName">Zapisz</button>
+				  </div>
+				</div>
+			  </div>
+			</div>
+			
+			<div class="modal fade" id="modalChangePassword" tabindex="-1" role="dialog" aria-labelledby="modalChangePassword" aria-hidden="true">
+			  <div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+				  <div class="modal-header justify-content-center">
+					<h5 class="modal-title" id="modalTitle">Zmiana hasła</h5>
+				  </div>
+				  <div class="modal-body d-flex justify-content-center">
+					
+					<form method = "post" action = "/settings/change-password" id = "formChangePassword">
+						 
+						 <div class="form-group">
+							<label for="userName">Nowe hasło:</label>
+							<input type="password" class="form-control" name="password" placeholder = "Nowe Hasło" required data-error="#errPass"  id = "inputPassword">
+						 </div>
+						 
+						 <div class="errorTxt">
+							<span id="errPass"></span>
+						</div>
+						 
+					</form>
+					
+				  </div>
+				  
+				  <div class = "messageChangePassword mb-2 text-center"></div>
+				  
+				  <div class="modal-footer justify-content-center">
+					<button type="button" class="btn myButtons clearMessage" data-dismiss="modal">Wyjdź</button>
+					<button type="submit" class="btn myButtons" id = "submitFormChangePassword">Zapisz</button>
+				  </div>
+				</div>
+			  </div>
+			</div>
+			
+			<div class="modal fade" id="modalResetAccount" tabindex="-1" role="dialog" aria-labelledby="modalResetAccount" aria-hidden="true">
+			  <div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+				  <div class="modal-header justify-content-center">
+					<h5 class="modal-title" id="modalTitle">Reset konta</h5>
+				  </div>
+				  <div class="modal-body">
+					Reset konta usunie wszystkie Twoje zapisane wydatki i przychody oraz ustawi domyślne kategorie. Czy na pewno chcesz to zrobić?
+				  </div>
+				  <div class="modal-footer justify-content-center">
+					<button type="button" class="btn myButtons" data-dismiss="modal">Nie</button>
+					<button type="submit" class="btn myButtons" onclick = "location.href='/settings/reset-account'" >Tak</button>
+				  </div>
+				</div>
+			  </div>
+			</div>
+			
+			<div class="modal fade" id="modalDeleteAccount" tabindex="-1" role="dialog" aria-labelledby="modalDeleteAccount" aria-hidden="true">
+			  <div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+				  <div class="modal-header justify-content-center">
+					<h5 class="modal-title" id="modalTitle">Usuwanie konta</h5>
+				  </div>
+				  <div class="modal-body">
+					Czy na pewno chcesz CAŁKOWICIE usunąć konto? Wszystkie dane zostaną stracone i nie będzie można ich odzyskać.
+				  </div>
+				  <div class="modal-footer justify-content-center">
+					<button type="button" class="btn myButtons" data-dismiss="modal">Nie</button>
+					<button type="submit" class="btn myButtons" onclick = "location.href='/settings/delete-account'" >Tak</button>
+				  </div>
+				</div>
+			  </div>
+			</div>
+		
+		
 		<div  class = "incomeModals">
 		{% for incomeCategory in incomeCategory %}
 		

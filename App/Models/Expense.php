@@ -167,4 +167,11 @@ class Expense extends \Core\Model{
 		}
 	}
 	
+	public static function deleteUserExpenseThings($userId){
+		$db = static::getDB();
+		$query = $db -> query ("DELETE FROM expenses WHERE user_id= '{$userId}' ");
+		$query = $db -> query ("DELETE FROM expenses_category_assigned_to_users WHERE user_id= '{$userId}' ");
+		$query = $db -> query ("DELETE FROM payment_methods_assigned_to_users WHERE user_id= '{$userId}' ");
+	}
+	
 }

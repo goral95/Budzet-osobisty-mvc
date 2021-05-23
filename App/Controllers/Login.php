@@ -70,4 +70,9 @@ class Login extends \Core\Controller
 		
 		$this -> redirect('/');
 	}
+	
+	public function showDeleteMessageAction(){
+		Flash::addMessage('Konto zostało usunięte');
+		$this -> redirect('/');
+	}
 }
