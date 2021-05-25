@@ -10,15 +10,23 @@
 		function checkCategoryLimit(){
 			var expensePrice = $('input[name="expensePrice"]').val();
 			var expenseCategory = $('input[name="expenseCategory"]:checked').val();
-			$.post("/expenses/limit" , {
-				expensePrice: expensePrice,
-				expenseCategory: expenseCategory
-			}, function( data, status){
-				$("#limit").html(data);
-			});
+			var today = new Date();
+			var todayMonth = today.getMonth() + 1;
+			var expenseDate = new Date($('input[name="expenseDate"]').val());
+			var expenseDateMonth = expenseDate.getMonth() + 1;
+			if(todayMonth == expenseDateMonth){
+				$.post("/expenses/limit" , {
+					expensePrice: expensePrice,
+					expenseCategory: expenseCategory
+				}, function( data, status){
+					$("#limit").html(data);
+				});
+			}else{
+				$("#limit").html('');
+			}
 		};
 		$(document).ready(function(){
-		$(".target").change(checkCategoryLimit).keyup(checkCategoryLimit);
+			$(".target").change(checkCategoryLimit).keyup(checkCategoryLimit);
 		});
 	
 	</script>
@@ -34,9 +42,9 @@
 {% block body %}
 
    <header><h2 class = "h3 mt-2 ">DODAWANIE WYDATKU</h2></header>
-									
+			
 	<form class = "d-flex flex-column justify-content-center align-items-center" method = "post"  action = "/expenses/add">
-		
+			<div class = "test"></div>
 			<div class="form-group">
 				<label for="expensePrice" >Kwota (zł):</label>
 				<div class = "row align-items-center">
@@ -49,7 +57,7 @@
 			 <div class="form-group">
 				<label for="expenseDate" >Data</label>
 				<div class = "row align-items-center">
-				<div class = "inputIcon d-flex align-items-center justify-content-center"><i class="icon-calendar"></i></div><input type="date" class="form-control " name="expenseDate"  id = "expenseDate" required>
+				<div class = "inputIcon d-flex align-items-center justify-content-center"><i class="icon-calendar"></i></div><input type="date" class="form-control target" name="expenseDate"  id = "expenseDate" required>
 				</div>
 			 </div>
 		  
